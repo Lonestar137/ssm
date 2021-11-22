@@ -1,26 +1,9 @@
 import time
 import curses
-
-#pip3 install yaml
-import yaml
+import xml.etree.ElementTree as ET
 
 #pip3 install python-decouple
 from decouple import config
-
-
-def process_ips(yaml_file)->str:
-    with open(yaml_file) as stream:
-        try:
-            #print(yaml.safe_load(stream))
-            data = yaml.safe_load(stream)
-            for sites in data.items():
-                for site_name in sites:
-                    if site_name == '3rd Div Birmingham':
-                        return print(site_name)
-                #    if device == '3rd Div Birmingham':
-                #        print(device)
-        except yaml.YAMLError as exc:
-            print(exc)
 
 
 def main_menu(stdscr):
@@ -84,14 +67,51 @@ def main_menu(stdscr):
 
 
 
+    #Generates selection.
     if options[selection] == 'SSH':
-        stdscr.addstr(0, 0, 'Birmingham')
-        for i in range(10):
-            stdscr.addstr(i+1, 5, '10.30.1.'+str(i))
+#        stdscr.addstr(0, 0, 'Birmingham')
+#        for i in range(10):
+#            stdscr.addstr(i+1, 5, '10.30.1.'+str(i))
+
+        #Temporary for MVP(Min Viable Product)
+         nodes=[]
+         i=0
+         for folder in root:
+             stdscr.addstr(i,0,folder.attrib['name'])
+             i+=1
+             if folder.attrib['type'] == 'folder':
+                 for district in folder:
+                     stdscr.addstr(i,0,'\t'+district.attrib['name'])
+                     i+=1
+
+                     if district.attrib['type'] == 'folder':
+                         for host in district:
+                             nodes.append((host.attrib['name'], i, 0))
+                             stdscr.addstr(i,0,'\t\t'+host.attrib['name'])
+                             i+=1
+
+             else:
+                 print('Not in folder ', folder.attrib['name'])
+
+             pass
+
+         stdscr.refresh()
+         # Movement
+         choice=0
+         while True:
+             if key == curses.KEY_UP:
+                 choice+=1
+             elif key == curses.KEY_DOWN:
+                 choice-=1
+
+             x=nodes[choice][2]
+             y=nodes[choice][1]
+             host=nodes[choice][0]
+             stdscr.addstr(y,x,host)
+
 
     stdscr.refresh()
     time.sleep(10)
-
 
 
 
@@ -100,11 +120,14 @@ if __name__ == "__main__":
     USER = config('SSH_USER')
     PASS = config('SSH_PASS')
 
-    process_ips('ALDOT.yaml')
+    tree = ET.parse('TestDatabase.dat')
+    root = tree.getroot()
+
+
     #print(USER, PASS)
 
     #Starts gui
-    #curses.wrapper(main_menu)
+    curses.wrapper(main_menu)
     #
     #
 
