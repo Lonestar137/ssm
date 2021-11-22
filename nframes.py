@@ -90,6 +90,8 @@ def movement(stdscr):
             else:
                 y += 1
                 selection += 1
+        elif key == 'q':
+            exit()
         elif key in ['/']:
             #Search function
             pass
@@ -168,46 +170,44 @@ def ssh_into(stdscr, server, user, passw):
     #ssh.connect(server, username=user, password=passw)
 
     #(topleft_y, topleft_x, bottomright_x, bottomleft_y)
-    rectangle(stdscr, 2, 42, 50 ,100)
+    #rectangle(stdscr, 2, 42, 50 ,100)
 
     import os
-    while True:
-        prompt = '# '
-        #cmd = input(server+prompt)
-        win = curses.newwin(2, 40, 50, 48)
-        win.addstr(0,0, prompt)
-        #box = Textbox(win)
-        #SSH BOX
-        stdscr.addstr(2, 43, server)
-        stdscr.refresh()
-        #box.edit()
+    #win = curses.newwin(2, 40, 50, 48)
+    #win.addstr(0,0, prompt)
 
-        #Get the cmd
-        #cmd = box.gather()[1:] #1: to skip sending prompt as cmd.
-
-        os.system('putty -l '+USER+' '+'-pw '+PASS+' '+server)
-        #stdscr.getch()
-        #stdscr.addstr(1, 70, x.stdout)
-        #opt = stdout.readlines()
-        #opt = "".join(opt)
-                                  #Ht  wd  y   x
-        #output_win = curses.newwin(49, 50, 3, 43) #TOOD: FIgure out why if you set x(10) to 42 it doesn't appear in the rectangle..
-        #output_win.addstr(cmd_output)
-        output_win.refresh()
+    #SSH session BOX
+    #stdscr.addstr(2, 43, server)
+    stdscr.refresh()
 
 
-        #print(opt)
-        #stdscr.addstr(2,50, opt)
+    #os.system("xterm -hold -e sshpass -p ${SSH_PASS} ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' ${SSH_USER}@10.$1.1.$2 &")
+    os.system("putty -ssh -l "+user+" -pw "+passw+" "+server+" &")
+    #os.system('xterm')
+    stdscr.getch()
+    import time
+    time.sleep(3)
+    #stdscr.addstr(1, 70, x.stdout)
+    #opt = stdout.readlines()
+    #opt = "".join(opt)
+                              #Ht  wd  y   x
+    #output_win = curses.newwin(49, 50, 3, 43) #TOOD: FIgure out why if you set x(10) to 42 it doesn't appear in the rectangle..
+    #output_win.addstr(cmd_output)
+    #output_win.refresh()
 
 
-        #TODO Placeholder prompt generation, needs to be replaced with mroe efficient solution.
-        #if cmd.find('conf t') != -1 or cmd.find('configure t') != -1:
-        #    prompt = '(config)# '
+    #print(opt)
+    #stdscr.addstr(2,50, opt)
 
-        #if prompt == '(config)#' and cmd in ['exit', 'Exit', 'end']:
-        #    prompt = '# '
-        #elif cmd in ['Exit', 'exit']:
-        #    break
+
+    #TODO Placeholder prompt generation, needs to be replaced with mroe efficient solution.
+    #if cmd.find('conf t') != -1 or cmd.find('configure t') != -1:
+    #    prompt = '(config)# '
+
+    #if prompt == '(config)#' and cmd in ['exit', 'Exit', 'end']:
+    #    prompt = '# '
+    #elif cmd in ['Exit', 'exit']:
+    #    break
 
 ssh_sessions = {
     'Datacenter': [
