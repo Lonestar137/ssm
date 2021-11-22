@@ -49,8 +49,14 @@ def movement(stdscr):
     GREEN_AND_BLACK = curses.color_pair(2)
     ORANGE_AND_WHITE = curses.color_pair(3)
 
+    #Define menu options.
+    options = user_input(stdscr)
+
     #Cursor start position
     x, y = 3, 3
+
+    #Menu choice
+    selection = 0
     while True:
 
         #Try block prevents stdscr from blocking.
@@ -60,25 +66,26 @@ def movement(stdscr):
             pass
 
         if key in ["KEY_LEFT", 'h', 'H']:
-            if key == 'H':
-                x -= 10
-            else:
-                x -= 1
+            pass
+            #x -= 1 #For movement
         elif key in ["KEY_RIGHT", 'l', 'L']:
-            if key == 'L':
-                x += 10
-            else:
-                x += 1
+            ssh_into(stdscr, options[selection][2], 'jonesgc', 'Fallin2017')
+
+            #x += 1 #For movement
         elif key in ["KEY_UP", 'k', 'K']:
             if key == 'K':
                 y -= 10
+                selection -= 1
             else:
                 y -= 1
+                selection -= 1
         elif key in ["KEY_DOWN", 'j', 'J']:
             if key == 'J':
                 y+=10
+                selection += 1
             else:
                 y += 1
+                selection += 1
         elif key in ['/']:
             #Search function
             pass
@@ -104,13 +111,19 @@ def movement(stdscr):
 
         stdscr.clear()
 
-        #Frame function.
-        user_input(stdscr)
+        #Frame function, also defined before key loop.
+        options = user_input(stdscr)
 
         #Debugger: Coords marker on cursor.
-        stdscr.addstr(y,x+20,'<---',curses.A_STANDOUT)
-        #_x = options[selection]
-        #stdscr.addstr()
+        #stdscr.addstr(y,x+20,'<---',curses.A_STANDOUT)
+        stdscr.addstr(0,0,key)
+
+        #Selection menu choices
+        y_of_opt = options[selection][0]
+        x_of_opt = options[selection][1]
+        opt_text = options[selection][2]
+        stdscr.addstr(y_of_opt, x_of_opt, '\t\t'+opt_text, curses.A_STANDOUT)
+
         stdscr.refresh()
 
 def user_input(stdscr):
@@ -140,8 +153,9 @@ def user_input(stdscr):
 
 
     stdscr.refresh()
+    return options
 
-def ssh_into(server, user, passw):
+def ssh_into(stdscr, server, user, passw):
     #Creates an interactive SSH session.
 
     #Import paramiko
@@ -150,11 +164,30 @@ def ssh_into(server, user, passw):
     ssh.connect(server, username=user, password=passw)
     while True:
         prompt = '#'
-        cmd = input(server+prompt)
+        #cmd = input(server+prompt)
+        win = curses.newwin(49, 40, 50, 48)
+        box = Textbox(win)
+        #(topleft_y, topleft_x, bottomright_x, bottomleft_y)
+        #SSH BOX
+        rectangle(stdscr, 2, 42, 50 ,100)
+        stdscr.addstr(2, 43, server)
+        stdscr.refresh()
+        box.edit()
+        #Get the cmd
+        cmd = box.gather()
+        stdscr.getch()
+
         stdin, stdout, stderr = ssh.exec_command(cmd)
+        stdscr.addstr(1, 70, cmd)
         opt = stdout.readlines()
         opt = "".join(opt)
-        print(opt)
+        win.addstr(49,40, opt.encode('utf-8'))
+        stdscr.refresh()
+
+
+        #print(opt)
+        #stdscr.addstr(2,50, opt)
+
 
         #TODO Placeholder prompt generation, needs to be replaced with mroe efficient solution.
         if cmd.find('conf t') != -1 or cmd.find('configure t') != -1:
@@ -174,10 +207,16 @@ ssh_sessions = {
     ],
     'Tuscaloosa':[
         '10.50.1.1', '10.50.1.2', '10.50.1.3'
+    ],
+    'Troy':[
+        '10.70.1.1', '10.70.1.4', '10.70.1.3', '10.70.1.4'
+    ],
+    'Personal LAN':[
+        '127.0.0.1'
     ]
 
+
 }
-#ssh_into('127.0.0.1', 'jonesgc', 'Fallin2017')
 #
 #wrapper(print_key)
 wrapper(movement)
