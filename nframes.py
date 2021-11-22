@@ -101,6 +101,18 @@ def movement(stdscr):
             stdscr.refresh()
             box.edit()
             new_site = box.gather()
+            if new_site in ['', ' ']:
+                #SKip and dont add to list.
+                pass
+            else:
+                import json
+                site = {new_site: []}
+                with open(PATH, mode='a',encoding='utf-8') as hosts_file:
+                    file_data = json.load(hosts_file)
+                    json.dump(site, hosts_file)
+
+                #add to list.
+                stdscr.refresh()
 
         elif key == 'n':
             stdscr.addstr(1, 5, 'Add new HOST:')
@@ -108,7 +120,7 @@ def movement(stdscr):
             box = Textbox(win)
             stdscr.refresh()
             box.edit()
-            new_site = box.gather()
+            new_host = box.gather()
             
         elif key in ['/']:
             #Search function
