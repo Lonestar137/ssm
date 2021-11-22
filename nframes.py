@@ -80,18 +80,17 @@ def movement(stdscr):
 
             #x += 1 #For movement
         elif key in ["KEY_UP", 'k', 'K']:
-            if key == 'K':
-                y -= 10
-                selection -= 1
+            #y -= 1
+            if selection == 0:
+                selection = len(options)-1
             else:
-                y -= 1
                 selection -= 1
+
         elif key in ["KEY_DOWN", 'j', 'J']:
-            if key == 'J':
-                y+=10
-                selection += 1
-            else:
-                y += 1
+            if selection == len(options)-1:
+                selection = 0
+            else: 
+                #y += 1
                 selection += 1
         elif key == 'q':
             exit()
@@ -155,16 +154,11 @@ def movement(stdscr):
 
 def user_input(stdscr):
     #Creates Box Frame and takes user input
-    curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_YELLOW)
-    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_RED, curses.COLOR_WHITE)
-    BLUE_AND_YELLOW = curses.color_pair(1)
-    GREEN_AND_BLACK = curses.color_pair(2)
-    ORANGE_AND_WHITE = curses.color_pair(3)
-
     rectangle(stdscr, 2,2,45,40)
     stdscr.addstr(2,3, 'SSH Sessions')
     stdscr.addstr(2,30, '(?) Help')
+    #Quit
+    stdscr.addstr(45,30, '(q) Quit')
 
     #Generate session
     global ssh_sessions #import Dictionary
