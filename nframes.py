@@ -3,6 +3,7 @@ from curses import wrapper
 from curses.textpad import Textbox, rectangle
 
 import json 
+import os
 
 from decouple import config
 
@@ -46,6 +47,7 @@ def print_key(stdscr):
 def movement(stdscr):
     USER = config('SSH_USER')
     PASS = config('SSH_PASS')
+    PATH = config('HOST_PATH')
     #Basic movement function
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_YELLOW)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -93,13 +95,31 @@ def movement(stdscr):
                 selection += 1
         elif key == 'q':
             exit()
+        elif key == 'N':
+            stdscr.addstr(1, 5, 'Add new SITE:')
+            win = curses.newwin(1, 30, 1, 19)
+            box = Textbox(win)
+            stdscr.refresh()
+            box.edit()
+            new_site = box.gather()
+
+        elif key == 'n':
+            stdscr.addstr(1, 5, 'Add new HOST:')
+            win = curses.newwin(1, 30, 1, 19)
+            box = Textbox(win)
+            stdscr.refresh()
+            box.edit()
+            new_site = box.gather()
+            
         elif key in ['/']:
             #Search function
             pass
         elif key in ['?', '.']:
             stdscr.addstr(2, 42, 'Movement Keys', curses.A_UNDERLINE)
             #Dynamic help menu space allocation.
-            for i in [(3, 42, 'j-up'), (4, 42,'k-down'), (5, 42,'h-left'),(6, 42,'l-right'),(7, 42, 'Session', True),(8,42,'Enter-Open Session')]:
+            for i in [(3, 42, 'j-up'), (4, 42,'k-down'), (5, 42,'h-left'),
+                    (6, 42,'l-right'),(7, 42, 'Session', True),(8,42,'Enter-Open Session'),
+                    (9, 42, 'Creation', True),(10, 42,'n-Create new Host'), (11, 42, 'N-Create new SITE')]:
                 _x = i[1]
                 _y = i[0]
                 text=i[2]
@@ -142,7 +162,7 @@ def user_input(stdscr):
     GREEN_AND_BLACK = curses.color_pair(2)
     ORANGE_AND_WHITE = curses.color_pair(3)
 
-    rectangle(stdscr, 2,2,50,40)
+    rectangle(stdscr, 2,2,45,40)
     stdscr.addstr(2,3, 'SSH Sessions')
     stdscr.addstr(2,30, '(?) Help')
 
@@ -173,7 +193,6 @@ def ssh_into(stdscr, server, user, passw):
     #(topleft_y, topleft_x, bottomright_x, bottomleft_y)
     #rectangle(stdscr, 2, 42, 50 ,100)
 
-    import os
     #win = curses.newwin(2, 40, 50, 48)
     #win.addstr(0,0, prompt)
 
@@ -186,8 +205,6 @@ def ssh_into(stdscr, server, user, passw):
     os.system("putty -ssh -l "+user+" -pw "+passw+" "+server+" &")
     #os.system('xterm')
     stdscr.getch()
-    import time
-    time.sleep(3)
     #stdscr.addstr(1, 70, x.stdout)
     #opt = stdout.readlines()
     #opt = "".join(opt)
@@ -210,8 +227,8 @@ def ssh_into(stdscr, server, user, passw):
     #elif cmd in ['Exit', 'exit']:
     #    break
 
-
-hosts_file = open('hosts.json')
+PATH = config('HOST_PATH')
+hosts_file = open(PATH)
 ssh_sessions = json.load(hosts_file)
 
 #wrapper(print_key)
