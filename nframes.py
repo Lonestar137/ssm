@@ -1,7 +1,8 @@
 import curses
 from curses import wrapper
 from curses.textpad import Textbox, rectangle
-import paramiko
+
+import json 
 
 from decouple import config
 
@@ -209,26 +210,12 @@ def ssh_into(stdscr, server, user, passw):
     #elif cmd in ['Exit', 'exit']:
     #    break
 
-ssh_sessions = {
-    'Datacenter': [
-        '10.60.1.1', '10.60.1.2'
-    ],
-    'Birmingham':[
-        '10.30.1.1', '10.30.1.2'
-    ],
-    'Tuscaloosa':[
-        '10.50.1.1', '10.50.1.2', '10.50.1.3'
-    ],
-    'Troy':[
-        '10.70.1.1', '10.70.1.4', '10.70.1.3', '10.70.1.4'
-    ],
-    'Personal LAN':[
-        '127.0.0.1'
-    ]
 
+hosts_file = open('hosts.json')
+ssh_sessions = json.load(hosts_file)
 
-}
-#
 #wrapper(print_key)
 wrapper(movement)
 #wrapper(user_input)
+
+hosts_file.close()

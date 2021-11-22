@@ -1,12 +1,14 @@
 
 
 
-
+hosts.json
 .env
 ..env.un~
 ..gitignore.un~
 .ALDOT.yaml.un~
 .main.py.un~
+.nframes.py.un~
+.hosts.json.un~
 .nframes.py.un~
 
 
