@@ -124,7 +124,8 @@ if __name__ == "__main__":
     root = tree.getroot()
 
 
-    #print(USER, PASS)
+    print(USER, PASS)
+    exit()
 
     #Starts gui
     curses.wrapper(main_menu)

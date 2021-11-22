@@ -3,6 +3,8 @@ from curses import wrapper
 from curses.textpad import Textbox, rectangle
 import paramiko
 
+from decouple import config
+
 
 
 
@@ -41,6 +43,8 @@ def print_key(stdscr):
     stdscr.getch()
 
 def movement(stdscr):
+    USER = config('SSH_USER')
+    PASS = config('SSH_PASS')
     #Basic movement function
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_YELLOW)
     curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -69,7 +73,7 @@ def movement(stdscr):
             pass
             #x -= 1 #For movement
         elif key in ["KEY_RIGHT", 'l', 'L']:
-            ssh_into(stdscr, options[selection][2], 'jonesgc', 'Fallin2017')
+            ssh_into(stdscr, options[selection][2], USER, PASS)
 
             #x += 1 #For movement
         elif key in ["KEY_UP", 'k', 'K']:
@@ -162,27 +166,32 @@ def ssh_into(stdscr, server, user, passw):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(server, username=user, password=passw)
+
+    #(topleft_y, topleft_x, bottomright_x, bottomleft_y)
+    rectangle(stdscr, 2, 42, 50 ,100)
     while True:
-        prompt = '#'
+        prompt = '# '
         #cmd = input(server+prompt)
-        win = curses.newwin(49, 40, 50, 48)
+        win = curses.newwin(2, 40, 50, 48)
+        win.addstr(0,0, prompt)
         box = Textbox(win)
-        #(topleft_y, topleft_x, bottomright_x, bottomleft_y)
         #SSH BOX
-        rectangle(stdscr, 2, 42, 50 ,100)
         stdscr.addstr(2, 43, server)
         stdscr.refresh()
         box.edit()
+
         #Get the cmd
-        cmd = box.gather()
+        cmd = box.gather()[1:] #1: to skip sending prompt as cmd.
         stdscr.getch()
 
         stdin, stdout, stderr = ssh.exec_command(cmd)
         stdscr.addstr(1, 70, cmd)
         opt = stdout.readlines()
         opt = "".join(opt)
-        win.addstr(49,40, opt.encode('utf-8'))
-        stdscr.refresh()
+                                  #Ht  wd  y   x
+        output_win = curses.newwin(49, 50, 3, 43) #TOOD: FIgure out why if you set x(10) to 42 it doesn't appear in the rectangle..
+        output_win.addstr(opt)
+        output_win.refresh()
 
 
         #print(opt)
@@ -191,10 +200,10 @@ def ssh_into(stdscr, server, user, passw):
 
         #TODO Placeholder prompt generation, needs to be replaced with mroe efficient solution.
         if cmd.find('conf t') != -1 or cmd.find('configure t') != -1:
-            prompt = '(config)#'
+            prompt = '(config)# '
 
         if prompt == '(config)#' and cmd in ['exit', 'Exit', 'end']:
-            prompt = '#'
+            prompt = '# '
         elif cmd in ['Exit', 'exit']:
             break
 
