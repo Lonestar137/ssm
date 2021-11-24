@@ -49,7 +49,7 @@ def movement(stdscr):
     x, y = 3, 3
 
     #Menu choice
-    selection = 1
+    selection = 0
     while True:
 
         #Try block prevents stdscr from blocking.
@@ -67,7 +67,7 @@ def movement(stdscr):
             #x += 1 #For movement
         elif key in ["KEY_UP", 'k', 'K']:
             #y -= 1
-            if selection == 1:
+            if selection == 0:
                 #selection = len(options)-1 #Sends to bottom side of list if hit top
                 pass
             else:
@@ -130,13 +130,12 @@ def movement(stdscr):
                 except:
                     stdscr.addstr(_y, _x, text)
 
+
             stdscr.getkey()#Blocker so you can read it.
-            stdscr.clear()
 
 
 
-        #stdscr.clear() #Necessary if you don't put options[txt]\t\t on the i==selection for
-        stdscr.refresh()
+        stdscr.clear()
 
         #Frame function, also defined before key loop.
         options = user_input(stdscr)
@@ -148,31 +147,16 @@ def movement(stdscr):
         #Selection menu choices
         y_of_opt = options[selection][0]
         x_of_opt = options[selection][1]
-
-        menu_pos=3
-        for i in range(0, len(options)):
-            if i > 41:
-                continue
-
-
-            if options[selection][2].find('\t') == -1:
-                try:
-                    if key in ['j', 'J', 'key.DOWN']:
-                        selection+=1
-                    elif key in ['k', 'K', 'key.UP'] and selection != 1:
-                        selection-=1
-                except:
-                    pass
-
+        opt_text = options[selection][2]
+        for i in range(selection-5, selection+5):
             if i == selection:
-                opt_text = options[selection][2]
                 try:
-                    stdscr.addstr(i+3, x_of_opt, '\t'+opt_text, curses.A_STANDOUT)
+                    stdscr.addstr(15, x_of_opt, '\t\t'+opt_text, curses.A_STANDOUT)
                 except:
                     pass
             else:
                 try:
-                    stdscr.addstr(i+3, x_of_opt, options[i][2] +'\t\t')#\t\t is used to clear the screen more efficiently.
+                    stdscr.addstr(15-i, x_of_opt, options[i][2])
                 except:
                     pass
 
@@ -192,12 +176,10 @@ def user_input(stdscr):
     pos=3
     options=[]
     for folder, hosts in ssh_sessions.items():
-        pos+=1
         #stdscr.addstr(pos, 3, folder)
-        options.append((pos, 3, folder))
+        pos+=1
         for host in hosts:
             #stdscr.addstr(pos, 3, '\t'+host)
-
             options.append((pos, 3, '\t'+host))
             pos+=1
 
@@ -253,7 +235,6 @@ def ssh_into(stdscr, server, user, passw):
 PATH = config('HOST_PATH')
 hosts_file = open(PATH)
 ssh_sessions = json.load(hosts_file)
-started=False
 
 #wrapper(print_key)
 wrapper(movement)
