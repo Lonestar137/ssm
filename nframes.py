@@ -49,8 +49,6 @@ def movement(stdscr):
         curr_display.append(options[i-3])
         stdscr.addstr(i, options[i-3][1], options[i-3][2] +'\t\t')
 
-    stdscr.addstr(15,35, curr_display[len(curr_display)-1][2]+' Tail')
-
     #Cursor start position
     x, y = 3, 3
 
@@ -74,6 +72,8 @@ def movement(stdscr):
         elif key in ["KEY_UP", 'k', 'K']:
             #y -= 1
             if selection == 1:
+                curr_display.insert(0, options[selection])
+                curr_display.pop(len(curr_display)-1)
                 selection = len(options)-1 #Sends to bottom side of list if hit top
                 
             else:
@@ -83,6 +83,8 @@ def movement(stdscr):
 
         elif key in ["KEY_DOWN", 'j', 'J']:
             if selection == len(options)-1:
+                curr_display.append(options[selection])
+                curr_display.pop(0)
                 selection = 0 #Sends to top if hit bottom
                 
             #elif options[selection+1][2].find('\t') == -1:
