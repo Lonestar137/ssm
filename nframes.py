@@ -44,6 +44,12 @@ def movement(stdscr):
 
     #Define menu options.
     options = user_input(stdscr)
+    curr_display=[]
+    for i in range(3, 45):
+        curr_display.append(options[i-3])
+        stdscr.addstr(i, options[i-3][1], options[i-3][2] +'\t\t')
+
+    stdscr.addstr(15,35, curr_display[len(curr_display)-1][2]+' Tail')
 
     #Cursor start position
     x, y = 3, 3
@@ -68,18 +74,27 @@ def movement(stdscr):
         elif key in ["KEY_UP", 'k', 'K']:
             #y -= 1
             if selection == 1:
-                #selection = len(options)-1 #Sends to bottom side of list if hit top
-                pass
+                selection = len(options)-1 #Sends to bottom side of list if hit top
+                
             else:
                 selection -= 1
+                curr_display.pop(len(curr_display)-1)
+                curr_display.insert(0, options[selection])
 
         elif key in ["KEY_DOWN", 'j', 'J']:
             if selection == len(options)-1:
-                #selection = 0 #Sends to top if hit bottom
-                pass
+                selection = 0 #Sends to top if hit bottom
+                
+            #elif options[selection+1][2].find('\t') == -1:
+            #    selection+=2
+            #    curr_display.pop(0)
+            #    curr_display.insert(len(curr_display)-1, options[selection-1])
             else: 
                 #y += 1
                 selection += 1
+                curr_display.pop(0)
+                #curr_display.insert(len(curr_display)-1, options[selection])
+                curr_display.append(options[selection])
         elif key == 'q':
             exit()
         elif key == 'N':
@@ -112,7 +127,16 @@ def movement(stdscr):
             
         elif key in ['/']:
             #Search function
-            pass
+            stdscr.addstr(1, 5, 'Search:')
+            win = curses.newwin(1, 30, 1, 19)
+            box = Textbox(win)
+            stdscr.refresh()
+            box.edit()
+            new_host = box.gather()
+            #TODO Create a function which takes a list and makes a queue.
+
+
+
         elif key in ['?', '.']:
             stdscr.addstr(2, 42, 'Movement Keys', curses.A_UNDERLINE)
             #Dynamic help menu space allocation.
@@ -141,40 +165,45 @@ def movement(stdscr):
         #Frame function, also defined before key loop.
         options = user_input(stdscr)
 
-        #Debugger: Coords marker on cursor.
-        #stdscr.addstr(y,x+20,'<---',curses.A_STANDOUT)
         stdscr.addstr(0,0,key)
 
         #Selection menu choices
         y_of_opt = options[selection][0]
         x_of_opt = options[selection][1]
+        opt_text = options[selection][2]
 
-        menu_pos=3
-        for i in range(0, len(options)):
-            if i > 41:
-                continue
+        for i in range(3, 45):
+            stdscr.addstr(i, curr_display[i-3][1], curr_display[i-3][2] +'\t\t\t')
+            
+
+        stdscr.addstr(44, x_of_opt, '\t'+opt_text, curses.A_STANDOUT)
+            
+
+        #for i in range(0, len(options)):
+        #    if i > 41:
+        #        continue
 
 
-            if options[selection][2].find('\t') == -1:
-                try:
-                    if key in ['j', 'J', 'key.DOWN']:
-                        selection+=1
-                    elif key in ['k', 'K', 'key.UP'] and selection != 1:
-                        selection-=1
-                except:
-                    pass
+        #    if options[selection][2].find('\t') == -1:
+        #        try:
+        #            if key in ['j', 'J', 'key.DOWN']:
+        #                selection+=1
+        #            elif key in ['k', 'K', 'key.UP'] and selection != 1:
+        #                selection-=1
+        #        except:
+        #            pass
 
-            if i == selection:
-                opt_text = options[selection][2]
-                try:
-                    stdscr.addstr(i+3, x_of_opt, '\t'+opt_text, curses.A_STANDOUT)
-                except:
-                    pass
-            else:
-                try:
-                    stdscr.addstr(i+3, x_of_opt, options[i][2] +'\t\t')#\t\t is used to clear the screen more efficiently.
-                except:
-                    pass
+        #    if i == selection:
+        #        opt_text = options[selection][2]
+        #        try:
+        #            stdscr.addstr(i+3, x_of_opt, '\t'+opt_text, curses.A_STANDOUT)
+        #        except:
+        #            pass
+        #    else:
+        #        try:
+        #            stdscr.addstr(i+3, x_of_opt, options[i][2] +'\t\t')#\t\t is used to clear the screen more efficiently.
+        #        except:
+        #            pass
 
 
         stdscr.refresh()
