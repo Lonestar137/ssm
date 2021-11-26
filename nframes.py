@@ -11,6 +11,10 @@ import os
 #Necessary for environmental password configuration.
 from decouple import config
 
+#For reading and updating csv during runtime
+import csv
+from collections import defaultdict
+
 
 
 def extra_text(stdscr):
@@ -32,12 +36,14 @@ def print_list(stdscr, lst: list, y: int, x:int):
             break
 
 def queue(stdscr):
-    global my_list
+    #global my_list
+    my_list, SSH_USER, SSH_PASS = initiate_vars()
+
     list_x=3 #X of list objects
     list_y=3
 
     #Regex to match the full IP address pattern.
-    ip_pattern=re.compile("([0-9].+)")
+    ip_pattern=re.compile("\t([0-9].+)")
 
     try:
         print_list(stdscr, my_list, list_y, list_x)
@@ -87,11 +93,10 @@ def queue(stdscr):
             last_index = len(my_list)-1
             my_list.pop(0)
         elif key in ['l', 'KEY_RIGHT']:
+            #Open press l, opens up a putty session on the selected device.
             server = selected_item
-            user='user'
-            passw='pass'
             #Putty config here
-            os.system('putty -ssh -l '+user+' -pw '+passw+' '+server+' &')
+            os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
             pass
         elif key == 'q':
             #q to quit
@@ -108,17 +113,38 @@ def queue(stdscr):
 
 def read_csv(csv_file):
     #TODO: Generate list of hosts from a csv file.
-    pass
-    # returns list
+
+    hosts = defaultdict(list)
+    with open(csv_file, newline='') as hosts_file:
+        reader = csv.DictReader(hosts_file)
+        for row in reader:
+            hosts[row['location']].append(row['ip'])
+
+    #print(dict(hosts))
+    return dict(hosts)
+
+def dict_to_list(data: dict):
+    #generates a list from csv dictinoary.
+    data_list=[]
+
+    for folder, hosts in data.items():
+        data_list.append(folder)
+        for host in hosts:
+            data_list.append('\t'+host)
+    return data_list
+
+def initiate_vars():
+    #Grabs credentials and host dict as defined in hosts.csv and .env
+    PATH = config('HOST_PATH')
+    SSH_USER = config('SSH_USER')
+    SSH_PASS = config('SSH_PASS')
+
+    #Create dictionary
+    hosts_dict = read_csv(PATH)
+    hosts_list = dict_to_list(hosts_dict)
+
+    return hosts_list, SSH_USER, SSH_PASS
 
 
-
-PATH = './hosts.csv'
-read_csv(PATH)
-
-#my_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-my_list = ['127.0.0.1', 'A test']
-for i in range(20):
-    my_list.append('10.100.1.'+str(i))
-
-wrapper(queue)
+if __name__ == "__main__":
+    wrapper(queue)

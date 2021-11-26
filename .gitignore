@@ -2,6 +2,7 @@
 
 
 hosts.json
+hosts.csv
 .env
 ..env.un~
 ..gitignore.un~
