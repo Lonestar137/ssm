@@ -37,7 +37,7 @@ def print_list(stdscr, lst: list, y: int, x:int):
 
 def queue(stdscr):
     #global my_list
-    my_list, SSH_USER, SSH_PASS = initiate_vars()
+    my_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
 
     list_x=3 #X of list objects
     list_y=3
@@ -95,8 +95,23 @@ def queue(stdscr):
         elif key in ['l', 'KEY_RIGHT']:
             #Open press l, opens up a putty session on the selected device.
             server = selected_item
+            found = False
             #Putty config here
-            os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
+            #If the server has a unique password.
+            for folder, hosts in unique_hosts_dict.items():
+                for host in hosts:
+                    if server[1:] == host[0]:#[1:] because server has tab at start
+                        #The .env variable needs to be assigned in the .csv file in the username/password fields.
+                        UNIQUE_USER = config(host[1])
+                        UNIQUE_PASS = config(host[2])
+                        os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
+                        found = True
+                    else:
+                        pass
+
+            if found == False:
+                os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
+        elif key == 'n':
             pass
         elif key == 'q':
             #q to quit
@@ -114,14 +129,29 @@ def queue(stdscr):
 def read_csv(csv_file):
     #TODO: Generate list of hosts from a csv file.
 
+    unique_hosts=defaultdict(list)
     hosts = defaultdict(list)
     with open(csv_file, newline='') as hosts_file:
         reader = csv.DictReader(hosts_file)
         for row in reader:
+            if row['username'] != None and row['password'] != None:
+                unique_hosts[row['location']].append((row['ip'], row['username'], row['password']))
+
             hosts[row['location']].append(row['ip'])
 
-    #print(dict(hosts))
-    return dict(hosts)
+    return dict(hosts), dict(unique_hosts)
+
+def read_csv2(csv_file):
+
+    with open(csv_file, newline='') as hosts_file:
+        comma_sep_string = ''
+        reader=csv.reader(hosts_file)
+        for row in reader:
+            comma_sep_string += ','.join(row)
+            comma_sep_string +='\n'
+
+    print(comma_sep_string)
+    return comma_sep_string
 
 def dict_to_list(data: dict):
     #generates a list from csv dictinoary.
@@ -140,11 +170,23 @@ def initiate_vars():
     SSH_PASS = config('SSH_PASS')
 
     #Create dictionary
-    hosts_dict = read_csv(PATH)
+    hosts_dict, unique_hosts_dict = read_csv(PATH)
     hosts_list = dict_to_list(hosts_dict)
+    print(unique_hosts_dict)
 
-    return hosts_list, SSH_USER, SSH_PASS
+    return hosts_list, SSH_USER, SSH_PASS, dict(unique_hosts_dict)
+
 
 
 if __name__ == "__main__":
-    wrapper(queue)
+   wrapper(queue)
+   exit()
+   x,y,z, unique = initiate_vars()
+   for folder, hosts in unique.items():
+       for i in hosts:
+           print(i)
+
+
+
+
+   #read_csv('hosts.csv')
