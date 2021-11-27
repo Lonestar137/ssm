@@ -15,10 +15,17 @@ SSM is a lightweight Python(ncurses) based SSH manager.
     `SSH_USER=yourUSER
     SSH_PASS=yourPASS
     HOST_FILE=path/to/your/file/with/hosts.json`
+By default `SSH_USER` and `SSH_PASS` will be used on all sessions unless you specify a different variable in the `hosts.csv` username and password fields.
 
-4. Make sure to create `hosts.csv` and add your sessions following the format found in `example-hosts.csv`
+4. Make sure to create `hosts.csv` and add your sessions following the format found in `example-hosts.csv`.  You can add unique passwords to each session by specifying a .env variable in the `username` and `password` fields.  Just make sure that you define the variable in the .env like you did with `SSH_USER` and `SSH_PASS`.
 
 4. Afterward, you can start the application from that directory with:
    `python3 nframes.py`
 
-5. You can create a shell script/alias if you're on a Unix-like system to easily call the program from anywhere on the system, or if you're on Windows you can create a batch file.
+5. You can create a shell script/alias if you're on a Unix-like system to easily call the program from anywhere on the system, or if you're on Windows, you can create a batch file or shortcut.
+
+
+
+
+
+
