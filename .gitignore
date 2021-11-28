@@ -1,6 +1,7 @@
 
 
 
+hosts*
 hosts.json
 hosts.csv
 .env

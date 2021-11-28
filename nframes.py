@@ -141,7 +141,9 @@ def read_csv(csv_file):
 
     return dict(hosts), dict(unique_hosts)
 
-def read_csv2(csv_file):
+def read_csv_make_string(csv_file):
+    #Returns the csv file data as a formatted string.
+    #Currently, not used in the program but may be useful.
 
     with open(csv_file, newline='') as hosts_file:
         comma_sep_string = ''
@@ -180,13 +182,4 @@ def initiate_vars():
 
 if __name__ == "__main__":
    wrapper(queue)
-   exit()
-   x,y,z, unique = initiate_vars()
-   for folder, hosts in unique.items():
-       for i in hosts:
-           print(i)
 
-
-
-
-   #read_csv('hosts.csv')
