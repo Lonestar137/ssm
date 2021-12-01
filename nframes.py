@@ -122,6 +122,7 @@ def queue(stdscr, my_list=None):
             pass
         #Search function
         elif key == '/':
+            stdscr.addstr(1,2,'Search: ', curses.A_STANDOUT)
             word=''
             #Prints search list as you type
             while True:
@@ -135,6 +136,9 @@ def queue(stdscr, my_list=None):
                 elif key == "KEY_BACKSPACE" and word != '':
                     word = word[:len(word)-1]
                 elif key == "\r" or key == "\n":
+                    pass
+                elif len(key) > 1:
+                    #Stops extra keys from printing on line.
                     pass
                 else:
                     word += key
