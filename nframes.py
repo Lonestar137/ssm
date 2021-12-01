@@ -26,7 +26,7 @@ def extra_text(stdscr):
 def print_list(stdscr, lst: list, y: int, x:int):
 
     #How many hosts should be spawned.
-    y_limit=46
+    y_limit=45
 
     for i in lst:
         if y < y_limit:
@@ -143,7 +143,7 @@ def queue(stdscr, my_list=None):
                 else:
                     word += key
 
-                stdscr.addstr(30,40,word)
+                #stdscr.addstr(30,40,word)
                 filtered_list=[]
 
                 for i in my_list:
