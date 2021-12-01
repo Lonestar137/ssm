@@ -1,16 +1,18 @@
 
 
-
+*.un~
 hosts*
 hosts.json
 hosts.csv
 .env
+.env.un~
 ..env.un~
 ..gitignore.un~
 .ALDOT.yaml.un~
 .main.py.un~
 .nframes.py.un~
 .hosts.json.un~
+.hosts.csv.un~
 .nframes.py.un~
 old-nframes.py
 

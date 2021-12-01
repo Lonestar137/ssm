@@ -35,15 +35,21 @@ def print_list(stdscr, lst: list, y: int, x:int):
         else:
             break
 
-def queue(stdscr):
+def queue(stdscr, my_list=None):
     #global my_list
-    my_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
+    if my_list == None:
+        my_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
+    else:
+        ignore_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
 
     list_x=3 #X of list objects
     list_y=3
 
     #Regex to match the full IP address pattern.
     ip_pattern=re.compile("\t([0-9].+)")
+
+    #Clears weirdness on search function.
+    #stdscr.clear()
 
     try:
         print_list(stdscr, my_list, list_y, list_x)
@@ -61,6 +67,7 @@ def queue(stdscr):
 
         selected_item = str(my_list[pointer])
 
+        curses.init_pair(156, 155, 154)
         #Place highlighted ontop of the list.  But place selected object in the center always.
         stdscr.addstr(list_y+pointer, list_x, '\t\t'+selected_item, curses.A_STANDOUT)
 
@@ -113,13 +120,60 @@ def queue(stdscr):
                 os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
         elif key == 'n':
             pass
+        #Search function
+        elif key == '/':
+            word=''
+            #Prints search list as you type
+            while True:
+                key = stdscr.getkey()
+
+                if key == "q":
+                    break
+                elif key == "j":
+                    stdscr.addstr(1,2,'Search: '+word)
+                    queue(stdscr, filtered_list)
+                elif key == "KEY_BACKSPACE" and word != '':
+                    word = word[:len(word)-1]
+                elif key == "\r" or key == "\n":
+                    pass
+                else:
+                    word += key
+
+                stdscr.addstr(30,40,word)
+                filtered_list=[]
+
+                for i in my_list:
+                    if i.find(word) != -1:
+                        filtered_list.append(i)
+                    else:
+                        pass
+                stdscr.clear()
+                try:
+                    rectangle(stdscr, 2,2,45,40)
+                    extra_text(stdscr)
+                except:
+                    pass
+                print_list(stdscr, filtered_list, list_y, list_x)
+                stdscr.addstr(1,2,'Search: '+word, curses.A_STANDOUT)
+
+            stdscr.clear()
+
         elif key == 'q':
             #q to quit
-            exit()
+            break
+        elif key == '?':
+            help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.',
+                            ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - break', 'Note: you can search within lists. q to break out.']
+
+            #Generate side menu from options list.
+            side_menu(stdscr, help_options)
+
         else:
             pass
 
         stdscr.refresh()
+
+        #Try to render the list
         try:
             print_list(stdscr, my_list, list_y, list_x)
         except:
@@ -127,8 +181,6 @@ def queue(stdscr):
 
 
 def read_csv(csv_file):
-    #TODO: Generate list of hosts from a csv file.
-
     unique_hosts=defaultdict(list)
     hosts = defaultdict(list)
     with open(csv_file, newline='') as hosts_file:
@@ -152,7 +204,7 @@ def read_csv_make_string(csv_file):
             comma_sep_string += ','.join(row)
             comma_sep_string +='\n'
 
-    print(comma_sep_string)
+    #print(comma_sep_string)
     return comma_sep_string
 
 def dict_to_list(data: dict):
@@ -162,7 +214,7 @@ def dict_to_list(data: dict):
     for folder, hosts in data.items():
         data_list.append(folder)
         for host in hosts:
-            data_list.append('\t'+host)
+            data_list.append('\t'+str(host))
     return data_list
 
 def initiate_vars():
@@ -174,11 +226,20 @@ def initiate_vars():
     #Create dictionary
     hosts_dict, unique_hosts_dict = read_csv(PATH)
     hosts_list = dict_to_list(hosts_dict)
-    print(unique_hosts_dict)
+    #print(unique_hosts_dict)
 
     return hosts_list, SSH_USER, SSH_PASS, dict(unique_hosts_dict)
 
-
+def side_menu(stdscr, option_list):
+    #Generates a menu beside the rectangle from a list.  Headers can be created by tuple(str, curses.FONT_TYPE)
+    for i in range(len(option_list)):
+        option=option_list[i]
+        if type(option) == tuple:
+            stdscr.addstr(i+2, 42, option[0], option[1])
+        else:
+            stdscr.addstr(i+2, 42, '  '+option)
+    stdscr.getch()
+    stdscr.clear()
 
 if __name__ == "__main__":
    wrapper(queue)

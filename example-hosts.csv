@@ -1,8 +1,13 @@
 location,ip,username,password
 Home,127.0.0.1
+
 Office,10.10.1.1
 Office,10.10.1.2
 Office,10.10.1.3
-Work,10.80.10.1,My_work_user,work_password
-Work,10.80.10.2,ANOTHER_work_user,ANOTHER_work_password
+Office,10.10.1.3
+
+Examples,10.10.1.4,ALT_USER,ALT_PASSWORD
+
+Examples,10.80.10.1,My_work_user,work_password
+Examples,10.80.10.2,ANOTHER_work_user,ANOTHER_work_password
 
