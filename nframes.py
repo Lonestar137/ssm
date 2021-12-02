@@ -130,7 +130,7 @@ def queue(stdscr, my_list=None):
 
                 if key == "q":
                     break
-                elif key == "j":
+                elif key == "j" and filtered_list != []:
                     stdscr.addstr(1,2,'Search: '+word)
                     queue(stdscr, filtered_list)
                 elif key == "KEY_BACKSPACE" and word != '':
@@ -157,7 +157,8 @@ def queue(stdscr, my_list=None):
                     extra_text(stdscr)
                 except:
                     pass
-                print_list(stdscr, filtered_list, list_y, list_x)
+                if filtered_list != []:
+                    print_list(stdscr, filtered_list, list_y, list_x)
                 stdscr.addstr(1,2,'Search: '+word, curses.A_STANDOUT)
 
             stdscr.clear()
