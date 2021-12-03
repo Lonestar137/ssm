@@ -1,5 +1,5 @@
 import curses
-from curses import wrapper
+from curses import wrapper, window
 from curses.textpad import Textbox, rectangle
 
 #Regex
@@ -17,19 +17,20 @@ from collections import defaultdict
 
 
 
-def extra_text(stdscr):
+def extra_text(stdscr, y_max, x_max):
     #Extra text on the rectangle, i.e., (?) help or (q) quit
     stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE)
     stdscr.addstr(2, 30, '(?) Help')
-    stdscr.addstr(45, 30, '(q) Quit')
+    stdscr.addstr(y_max-2, 30, '(q) Quit')
 
 def print_list(stdscr, lst: list, y: int, x:int):
+    #y,x = initial start point.
 
-    #How many hosts should be spawned.
-    y_limit=45
+    #How many hosts should be spawned to screen.
+    y_limit, x_limit = window.getmaxyx(stdscr)
 
     for i in lst:
-        if y < y_limit:
+        if y < y_limit-2:
             stdscr.addstr(y,x, str(i)+'\t\t\t')
             y+=1
         else:
@@ -43,7 +44,9 @@ def queue(stdscr, my_list=None):
         ignore_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
 
     list_x=3 #X of list objects
-    list_y=3
+    list_y=3 #Starting y coord of list.
+
+    max_y, max_x=window.getmaxyx(stdscr)
 
     #Regex to match the full IP address pattern.
     ip_pattern=re.compile("\t([0-9].+)")
@@ -51,6 +54,7 @@ def queue(stdscr, my_list=None):
     #Clears weirdness on search function.
     #stdscr.clear()
 
+    print_list(stdscr, my_list, list_y, list_x)
     try:
         print_list(stdscr, my_list, list_y, list_x)
     except:
@@ -73,8 +77,8 @@ def queue(stdscr, my_list=None):
 
         #Frame, try - to prevent crash if window size becomes too small.
         try:
-            rectangle(stdscr, 2,2,45,40)
-            extra_text(stdscr)
+            rectangle(stdscr, 2,2,max_y-2,40)
+            extra_text(stdscr, max_y, max_x)
         except:
             pass
 
@@ -153,7 +157,7 @@ def queue(stdscr, my_list=None):
                         pass
                 stdscr.clear()
                 try:
-                    rectangle(stdscr, 2,2,45,40)
+                    rectangle(stdscr, 2,2,max_y-2,40)
                     extra_text(stdscr)
                 except:
                     pass
