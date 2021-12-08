@@ -21,7 +21,7 @@ def parse_dict(hosts: dict):
     for group_tuple in hosts.items():
         for x in group_tuple[1]:
             for y in x:
-                #print(x['attrs'])
+                print(x['attrs'])
                 #print(x['joins']['host']['address']) #Prints host names of all devices.
                 if x['attrs']['state'] == 2.0:
                     address=x['joins']['host']['address']
@@ -48,6 +48,7 @@ def render_list(stdscr, y: int, x: int, lst: list):
 
     #Starting y position
     pos=y
+    stdscr.addstr(pos-1,x,'Host problems',curses.A_UNDERLINE)
     for i in lst:
         if pos < y_limit:
             try:
@@ -64,9 +65,10 @@ if __name__ == '__main__':
     import curses
     from curses import wrapper
 
-    load = {'joins': ['host.name', 'host.address'],
+    load = {'joins': ['host.name', 'host.address', 'host.vars'],
             'attrs' : ['name', 'state', 'downtime_depth', 'acknowledgement'],
-            'filter': 'service.state != ServiceOK && service.downtime_depth == 0.0 && service.acknowledgement == 0.0'}
+            #'filter': 'service.state != ServiceOK && service.downtime_depth == 0.0 && service.acknowledgement == 0.0'}
+            'filter': 'match(host.vars.tenant, \"WC Region\") &&  service.state != ServiceOK && service.downtime_depth == 0.0 && service.acknowledgement == 0.0'}
 
 
     USER = config('MONITOR_USER')
@@ -74,6 +76,9 @@ if __name__ == '__main__':
     SERVER = config('MONITOR_URL')
 
     hosts = server_request(USER, PASS, SERVER, load)
+    print(hosts['results'][1])#Prints first host in the response
+    exit()
+
     hosts_tup_list=parse_dict(hosts)
 
     wrapper(render_list, 1, 1, hosts_tup_list)
