@@ -117,13 +117,17 @@ def queue(stdscr, my_list=None):
                         #The .env variable needs to be assigned in the .csv file in the username/password fields.
                         UNIQUE_USER = config(host[1])
                         UNIQUE_PASS = config(host[2])
-                        os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
+                        #os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
+                        target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
+                        os.system(target)
                         found = True
                     else:
                         pass
 
             if found == False:
-                os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
+                target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+server.strip()
+                os.system(target)
+                #os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
         elif key == 'n':
             pass
         #Search function

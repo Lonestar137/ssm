@@ -5,18 +5,23 @@
 SSM is a lightweight Python(ncurses) based SSH manager.
 
 ### Installation
-1. Download the python dependencies: curses(ncurses), python-decouple.   
+1. Clone the repo into a directory of your choosing.  
+   `git clone https://github.com/Lonestar137/ssm.git`
+
+2. Download the python dependencies: curses(ncurses), python-decouple.   
    `pip3 install windows-curses python-decouple`  
    Install putty for your OS:
    **Ubuntu(Linux)**  
+   Make sure you have gnome-terminal installed.  Or, optionally you can enable putty terminal:
    `sudo apt install putty`  
+
+   To use PuTTy, just uncomment the two lines with `os.system('putty . . .')` and comment the two lines with `os.system('gnome-terminal . . .')` inside the `nframes.py` file.
 
    **Windows**  
    Download the [putty](https://www.putty.org/) .exe file and place it in the /ssm folder.  
    Open `nframes.py` and change the line `putty -ssh -l...` to `putty.exe -ssh -l ...`.
 
-2. Clone the repo into a directory of your choosing.  
-   `git clone https://github.com/Lonestar137/ssm.git`
+   To use PuTTy, just uncomment the two lines with `os.system('putty . . .')` and comment the two lines with `os.system('gnome-terminal . . .')` inside the `nframes.py` file.
 
 3. Then, rename the `env` file to `.env`. Edit the file and define your credentials inside like so:  
     SSH_USER=yourUSER
