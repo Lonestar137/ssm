@@ -1,5 +1,10 @@
 from decouple import config
 import requests
+import time
+import datetime
+from datetime import timedelta
+
+#This is just an example of how a setting up a monitor server with nframes would look like.
 
 
 def server_request(user: str, password: str, server: str, payload: dict):
@@ -21,13 +26,14 @@ def parse_dict(hosts: dict):
     for group_tuple in hosts.items():
         for x in group_tuple[1]:
             for y in x:
-                print(x['attrs'])
+                #print(x['attrs'])
                 #print(x['joins']['host']['address']) #Prints host names of all devices.
-                if x['attrs']['state'] == 2.0:
-                    address=x['joins']['host']['address']
+                address=x['joins']['host']['address']
+                if str(host_list).find(address) != -1:
+                    pass
+                elif x['attrs']['state'] == 2.0:
                     host_list.append((address, 3))
                 elif x['attrs']['state'] == 1.0:
-                    address=x['joins']['host']['address']
                     host_list.append((address, 2))
     #print(host_list)
     return host_list
@@ -39,6 +45,7 @@ def render_list(stdscr, y: int, x: int, lst: list):
     #Renders a TUP_LIST to the screen ('str', 2) str, color_pair_num
 
     #State color definitions
+    #curses.use_default_colors()
     curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
     curses.init_pair(3, curses.COLOR_RED, curses.COLOR_BLACK)
@@ -59,13 +66,32 @@ def render_list(stdscr, y: int, x: int, lst: list):
                 pass
     stdscr.refresh()
 
+    if __name__ == "__main__":
+        #Blocker for when this file is run independently.
+        stdscr.getch()
+
+def epoch_time_conversion(epoch, delta_m=10):
+    #Epoch = raw time, (non human readable)
+    #Remember this:
+    #timestamp = hosts['results'][1]['joins']['host']['last_state_up']
+
+    #TODO Only show hosts that have been down for >10 minutes
+
+
+    curr_time = datetime.datetime.now()
+    time_difference = curr_time - epoch
+    if time_difference > datetime.timedelta(minutes=delta_m):
+        print('downtime greater than ' + str(delta_m))
+        print('Difference: '+time_difference)
+
+
 if __name__ == '__main__':
     #for testing purposes only:
 
     import curses
     from curses import wrapper
 
-    load = {'joins': ['host.name', 'host.address', 'host.vars'],
+    load = {'joins': ['host.name', 'host.address', 'host.vars', 'host'],
             'attrs' : ['name', 'state', 'downtime_depth', 'acknowledgement'],
             #'filter': 'service.state != ServiceOK && service.downtime_depth == 0.0 && service.acknowledgement == 0.0'}
             'filter': 'match(host.vars.tenant, \"WC Region\") &&  service.state != ServiceOK && service.downtime_depth == 0.0 && service.acknowledgement == 0.0'}
@@ -76,12 +102,20 @@ if __name__ == '__main__':
     SERVER = config('MONITOR_URL')
 
     hosts = server_request(USER, PASS, SERVER, load)
-    print(hosts['results'][1])#Prints first host in the response
-    exit()
+    #print(hosts['results'][1])#Prints first host in the response
+
+    #timestamp = hosts['results'][1]['joins']['host']['last_state_up']
+    #datetime = datetime.datetime.fromtimestamp(timestamp)
+    #delta = timedelta(hours=4)
+    #print(datetime-delta)
+    
+    #epoch_time_conversion(timestamp)
+
 
     hosts_tup_list=parse_dict(hosts)
 
     wrapper(render_list, 1, 1, hosts_tup_list)
+
 
 
 

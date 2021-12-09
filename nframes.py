@@ -15,11 +15,13 @@ from decouple import config
 import csv
 from collections import defaultdict
 
-
-
 def extra_text(stdscr, y_max, x_max):
+    #color definitions, adds support for transparent background.
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_GREEN, -1)
+
     #Extra text on the rectangle, i.e., (?) help or (q) quit
-    stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE)
+    stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE, )
     stdscr.addstr(2, 30, '(?) Help')
     stdscr.addstr(y_max-2, 30, '(q) Quit')
 
@@ -66,9 +68,9 @@ def queue(stdscr, my_list=None):
 
     #Ensures that the key is made at startup, i.e. if pointer lands on folder it won't error out because key is never created.
     key_made=False
+    
 
     while True:
-
         selected_item = str(my_list[pointer])
 
         curses.init_pair(156, 155, 154)
@@ -251,5 +253,5 @@ def side_menu(stdscr, option_list):
     stdscr.clear()
 
 if __name__ == "__main__":
-   wrapper(queue)
+    wrapper(queue)
 
