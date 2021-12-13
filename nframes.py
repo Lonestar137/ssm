@@ -140,9 +140,13 @@ def queue(stdscr, my_list=None):
 
                 if key == "q":
                     break
-                elif key == "j" and filtered_list != []:
-                    stdscr.addstr(1,2,'Search: '+word)
-                    queue(stdscr, filtered_list)
+                elif key == "j":
+                    if filtered_list == []:
+                        target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+word.strip()
+                        os.system(target)
+                    else:
+                        stdscr.addstr(1,2,'Search: '+word)
+                        queue(stdscr, filtered_list)
                 elif key == "KEY_BACKSPACE" and word != '':
                     word = word[:len(word)-1]
                 elif key == "\r" or key == "\n":
