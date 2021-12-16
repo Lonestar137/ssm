@@ -1,3 +1,4 @@
+PLATFORM=[insert your platform here, determines SSH launch program: putty-windows, putty-linux, gnome-terminal]
 SSH_USER=username
 SSH_PASS=password
 HOST_PATH=/path/to/hosts.csv
