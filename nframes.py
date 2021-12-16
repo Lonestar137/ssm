@@ -138,7 +138,7 @@ def queue(stdscr, my_list=None):
                                 os.system('putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
                             except:
                                 stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
-                        elif PLATFORM == 'xfce-terminal':
+                        elif PLATFORM == 'xterm-terminal':
                             try:
                                 target='xterm -hold -e \"sshpass -p '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
                                 os.system(target)
