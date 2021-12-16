@@ -135,7 +135,7 @@ def queue(stdscr, my_list=None):
                                 stdscr.addstr(1,1,'putty command not found.')
                         elif PLATFORM == 'putty-windows':
                             try:
-                                os.system('putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
+                                os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
                             except:
                                 stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
                         elif PLATFORM == 'xterm-terminal':
@@ -165,7 +165,7 @@ def queue(stdscr, my_list=None):
                         stdscr.addstr(1,1,'putty command not found.')
                 elif PLATFORM == 'putty-windows':
                     try:
-                        os.system('putty.exe -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
+                        os.system('START /B putty.exe -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server)
                     except:
                         stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
                 elif PLATFORM == 'xterm-terminal':
