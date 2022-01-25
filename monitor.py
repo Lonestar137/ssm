@@ -1,5 +1,6 @@
 from decouple import config
 import requests
+import urllib3
 import time
 import datetime
 from datetime import timedelta
@@ -11,6 +12,7 @@ def server_request(user: str, password: str, server: str, payload: dict):
     #Sends request to server.
 
     s = requests.Session()
+    requests.packages.urllib3.disable_warnings()
     s.trust_env = False
     response = s.post(server, 
             verify=False,
