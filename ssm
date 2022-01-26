@@ -1,0 +1,1 @@
+python3 /usr/local/bin/ssm/main.py || python /usr/local/bin/ssm/main.py || echo "ssm folder/py files not found at /usr/local/bin/ssm/"

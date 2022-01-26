@@ -41,9 +41,9 @@ def print_list(stdscr, lst: list, y: int, x:int):
 def queue(stdscr, my_list=None):
     #global my_list
     if my_list == None:
-        my_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
+        my_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
     else:
-        ignore_list, SSH_USER, SSH_PASS, unique_hosts_dict = initiate_vars()
+        ignore_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
 
     list_x=3 #X of list objects
     list_y=3 #Starting y coord of list.
@@ -68,6 +68,10 @@ def queue(stdscr, my_list=None):
 
     #Ensures that the key is made at startup, i.e. if pointer lands on folder it won't error out because key is never created.
     key_made=False
+
+    #Prevents pointer from starting on a folder.
+    if str(my_list[pointer]).find('\t') == -1:
+        pointer+=1
     
 
     while True:
@@ -109,7 +113,8 @@ def queue(stdscr, my_list=None):
             #Open press l, opens up a putty session on the selected device.
             server = selected_item
             found = False
-            #Putty config here
+            #SSH program config here
+
             #If the server has a unique password.
             for folder, hosts in unique_hosts_dict.items():
                 for host in hosts:
@@ -117,17 +122,62 @@ def queue(stdscr, my_list=None):
                         #The .env variable needs to be assigned in the .csv file in the username/password fields.
                         UNIQUE_USER = config(host[1])
                         UNIQUE_PASS = config(host[2])
-                        #os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
-                        target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
-                        os.system(target)
+                        if PLATFORM == 'gnome-terminal':
+                            try:
+                                target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
+                                os.system(target)
+                            except:
+                                stdscr.addstr(1,1,'gnome-terminal command not found.')
+                        elif PLATFORM == 'putty-linux':
+                            try:
+                                os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
+                            except:
+                                stdscr.addstr(1,1,'putty command not found.')
+                        elif PLATFORM == 'putty-windows':
+                            try:
+                                os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
+                            except:
+                                stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
+                        elif PLATFORM == 'xterm-terminal':
+                            try:
+                                target='xterm -hold -e \"sshpass -p '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
+                                os.system(target)
+                            except:
+                                stdscr.addstr(1,1,'xterm command not found.')
+                        else:
+                            stdscr.addstr(1, 1, '.env Variable PLATFORM is not set correctly.')  
                         found = True
                     else:
                         pass
 
+            #For servers with the default password
             if found == False:
-                target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+server.strip()
-                os.system(target)
-                #os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
+                if PLATFORM == 'gnome-terminal':
+                    try:
+                        target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+server.strip()
+                        os.system(target)
+                    except:
+                        stdscr.addstr(1,1,'gnome-terminal command not found.')
+                elif PLATFORM == 'putty-linux':
+                    try:
+                        os.system('putty -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server+' &')
+                    except:
+                        stdscr.addstr(1,1,'putty command not found.')
+                elif PLATFORM == 'putty-windows':
+                    try:
+                        os.system('START /B putty.exe -ssh -l '+SSH_USER+' -pw '+SSH_PASS+' '+server)
+                    except:
+                        stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
+                elif PLATFORM == 'xterm-terminal':
+                    try:
+                        target='xterm -hold -e \"sshpass -p '+SSH_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+SSH_USER+'@'+server.strip()+'\" '
+                        os.system(target)
+                    except:
+                        stdscr.addstr(1,1,'xterm command not found')
+
+                else:
+                    stdscr.addstr(3, 30, '.env Variable PLATFORM is not set correctly.')  
+                    pass
         elif key == 'n':
             pass
         #Search function
@@ -241,13 +291,14 @@ def initiate_vars():
     PATH = config('HOST_PATH')
     SSH_USER = config('SSH_USER')
     SSH_PASS = config('SSH_PASS')
+    PLATFORM = config('PLATFORM')
 
     #Create dictionary
     hosts_dict, unique_hosts_dict = read_csv(PATH)
     hosts_list = dict_to_list(hosts_dict)
     #print(unique_hosts_dict)
 
-    return hosts_list, SSH_USER, SSH_PASS, dict(unique_hosts_dict)
+    return hosts_list, SSH_USER, SSH_PASS, dict(unique_hosts_dict), PLATFORM
 
 def side_menu(stdscr, option_list):
     #Generates a menu beside the rectangle from a list.  Headers can be created by tuple(str, curses.FONT_TYPE)
