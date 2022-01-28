@@ -191,12 +191,28 @@ def queue(stdscr, my_list=None):
                 if key == "q":
                     break
                 elif key == "j":
-                    if filtered_list == []:
-                        target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+word.strip()
-                        os.system(target)
-                    else:
+                    #Check list to see if there is a valid host. Prevents infinite loop if no valid host IP in searched list.
+                    valid=False
+                    for i in filtered_list:
+                        if i.find('\t') != -1:
+                            valid=True
+                            break
+                        else:
+                            pass
+
+
+                    if filtered_list == [] and valid == True:
+                        #SSH to device if no matching IP
+                        #target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+word.strip()
+                        #os.system(target)
+
+
+                        pass
+                    #Elif list not empty and valid host found jumped down
+                    elif valid == True:
                         stdscr.addstr(1,2,'Search: '+word)
                         queue(stdscr, filtered_list)
+
                 elif key == "KEY_BACKSPACE" and word != '':
                     word = word[:len(word)-1]
                 elif key == "\r" or key == "\n":
