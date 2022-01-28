@@ -208,10 +208,12 @@ def queue(stdscr, my_list=None):
                     word += key
 
                 #stdscr.addstr(30,40,word)
+                #The list of hosts generated when you search
                 filtered_list=[]
-
+                
+                #Adds hosts that match your search to the rendered list.
                 for i in my_list:
-                    if i.find(word) != -1:
+                    if i.find(word) != -1 or i.find('\t') == -1:
                         filtered_list.append(i)
                     else:
                         pass
@@ -221,6 +223,7 @@ def queue(stdscr, my_list=None):
                     extra_text(stdscr)
                 except:
                     pass
+
                 if filtered_list != []:
                     print_list(stdscr, filtered_list, list_y, list_x)
                 stdscr.addstr(1,2,'Search: '+word, curses.A_STANDOUT)
