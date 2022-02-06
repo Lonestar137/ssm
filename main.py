@@ -25,4 +25,6 @@ try:
 except:
     pass
 
+
+#The only relevant line of code if not using a monitor server.
 wrapper(queue)

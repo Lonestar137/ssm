@@ -15,6 +15,10 @@ from decouple import config
 import csv
 from collections import defaultdict
 
+#for cmd line args 
+import sys
+import getpass
+
 def extra_text(stdscr, y_max, x_max):
     #color definitions, adds support for transparent background.
     curses.use_default_colors()
@@ -312,6 +316,36 @@ def initiate_vars():
     SSH_PASS = config('SSH_PASS')
     PLATFORM = config('PLATFORM')
 
+    # CMD Check - CMD line args for runtime variables.
+    for i, arg in enumerate(sys.argv):
+        if arg == '-h':
+            print("""Usage: ssm [OPTIONS] Value [-u] [-p] [-c] [-h] [-t]
+            Usage to temporarily change default user and password: python3 nframes.py -u [SSH_USER] -p
+                    OR if alias set:  ssm -u [SSH_USER] -p
+            [-u] SSH_USER
+            [-p] SSH_PASS
+            [-c] HOST_PATH
+            [-h] Help
+            [-t] Terminal emulator for SSH sessions. [Default: gnome-terminal] [Options: xterm-terminal, putty-windows, putty-linux]
+
+                    """)
+            sys.exit()
+        elif arg == '-c':
+            #Specify hosts.csv file path
+            PATH = sys.argv[i+1]
+        elif arg == '-u':
+            #Specify .env SSH_USER variable
+            SSH_USER = sys.argv[i+1]
+            print(SSH_USER)
+        elif arg == '-p':
+            #Specifgy .env SSH_PASS variable
+            SSH_PASS = getpass.getpass('Temp default session password: ')
+        elif arg == '-t':
+            #Specify a terminal emulator
+            PLATFORM = sys.argv[i+1]
+        else:
+            pass
+
     #Create dictionary
     hosts_dict, unique_hosts_dict = read_csv(PATH)
     hosts_list = dict_to_list(hosts_dict)
@@ -332,4 +366,5 @@ def side_menu(stdscr, option_list):
 
 if __name__ == "__main__":
     wrapper(queue)
+    #initiate_vars()
 

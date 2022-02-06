@@ -1,7 +1,8 @@
-PLATFORM=[insert your platform here, determines SSH launch program: putty-windows, putty-linux, gnome-terminal]
+PLATFORM=[insert your platform here, determines SSH launch program: putty-windows, putty-linux, gnome-terminal, xterm-terminal]
+HOST_PATH=/path/to/hosts.csv
+
 SSH_USER=username
 SSH_PASS=password
-HOST_PATH=/path/to/hosts.csv
 
 ALT_USER=alt_username
 ALT_PASSWORD=alternative_password1234

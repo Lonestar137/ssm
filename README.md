@@ -5,10 +5,13 @@
 SSM is a lightweight Python(ncurses) based SSH manager.
 
 ### Installation
+For installation, you essentially just need to clone the repository and define a few variables.
+
 1. Clone the repo into a directory of your choosing.  
    `git clone https://github.com/Lonestar137/ssm.git`
 
 2. Download the python dependencies: curses(ncurses), python-decouple.   
+   **Windows** 
    `pip3 install windows-curses python-decouple`  
    Install a supported SSH terminal handler for your OS:
 
@@ -28,7 +31,7 @@ SSM is a lightweight Python(ncurses) based SSH manager.
     SSH_PASS=yourPASS
     HOST_FILE=path/to/your/file/with/hosts.json  
 
-   Note: Environment variables can be defined anywhere your system supports but it's easier to manage from .env file as the file will override any conflicting environment variables on runtime.
+   Note: Environment variables can be defined anywhere your system supports but it's easier to manage from .env file.  You will also have to define how to retrieve the variable in `main.py`
 
 
 By default `SSH_USER` and `SSH_PASS` will be used on all sessions unless you specify a different variable in the `hosts.csv` username and password fields.  
@@ -39,7 +42,7 @@ For example:  `PLATFORM=putty-windows` or `PLATFORM=gnome-terminal`
 Options:
     putty-linux, putty-windows, gnome-terminal, xterm-terminal
 
-4. Make sure to create `hosts.csv` and add your sessions following the format found in `example-hosts.csv`.  You can add unique passwords to each session by specifying a .env variable in the `username` and `password` fields.  Just make sure that you define the variable in the .env like you did with `SSH_USER` and `SSH_PASS`.  
+4. Make sure to create `hosts.csv` and add your sessions following the format found in `example-hosts.csv`.  In the .env file, `HOSTS_PATH` should equal the path to the hosts.csv file you just created.  You can add unique passwords to each session by specifying a .env variable in the `username` and `password` fields.  Just make sure that you define the variable in the .env like you did with `SSH_USER` and `SSH_PASS`.  
 Examples are provided in example hosts and the initial env file.
 
 5. Afterward, you can start the application from that directory by typing in a terminal:
@@ -47,6 +50,8 @@ Examples are provided in example hosts and the initial env file.
 
 6. You can create a shell script/alias if you're on a Unix-like system to easily call the program from anywhere on the system, or if you're on Windows, you can create a batch file or shortcut.
 
+
+NOTE: Main.py contains an example of using a monitor server.  You can remove those lines of code if you do not wish to use one.
 
 
 
