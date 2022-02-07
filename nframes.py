@@ -365,6 +365,6 @@ def side_menu(stdscr, option_list):
     stdscr.clear()
 
 if __name__ == "__main__":
+    initiate_vars()
     wrapper(queue)
-    #initiate_vars()
 

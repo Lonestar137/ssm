@@ -1,6 +1,7 @@
 import time
 import nframes
 from nframes import queue
+from nframes import initiate_vars
 from curses import wrapper
 from decouple import config
 
@@ -27,4 +28,5 @@ except:
 
 
 #The only relevant line of code if not using a monitor server.
+initiate_vars()
 wrapper(queue)
