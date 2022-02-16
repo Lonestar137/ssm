@@ -337,8 +337,8 @@ def initiate_vars():
             #Specify .env SSH_USER variable
             SSH_USER = sys.argv[i+1]
             print(SSH_USER)
-        elif arg == '-p':
-            #Specifgy .env SSH_PASS variable
+        elif arg == '-p' and 'SSH_PASS' not in locals():
+            #Specify .env SSH_PASS variable
             SSH_PASS = getpass.getpass('Temp default session password: ')
         elif arg == '-t':
             #Specify a terminal emulator
