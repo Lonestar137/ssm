@@ -79,6 +79,7 @@ def queue(stdscr, my_list=None):
     
 
     while True:
+        max_y, max_x=window.getmaxyx(stdscr)
         selected_item = str(my_list[pointer])
 
         curses.init_pair(156, 155, 154)
@@ -264,6 +265,7 @@ def queue(stdscr, my_list=None):
             pass
 
         stdscr.refresh()
+        stdscr.clear()
 
         #Try to render the list
         try:
