@@ -83,8 +83,9 @@ def queue(stdscr, my_list=None):
         selected_item = str(my_list[pointer])
 
         curses.init_pair(156, 155, 154)
-        #Place highlighted ontop of the list.  But place selected object in the center always.
-        stdscr.addstr(list_y+pointer, list_x, '\t\t'+selected_item, curses.A_STANDOUT)
+        #Place highlighted ontop of the list.  But place selected object in the center always and use color_pair 1 to make green. 
+        stdscr.addstr(list_y+pointer, list_x, '\t\t'+selected_item, curses.A_STANDOUT | curses.color_pair(1))
+    
 
         #Frame, try - to prevent crash if window size becomes too small.
         try:
@@ -101,19 +102,38 @@ def queue(stdscr, my_list=None):
             key_made = True
 
         if key in ['k', 'KEY_UP']:
-            #Press j key to increment list down.
+            #Press k key to increment list up.
             last_index = len(my_list)-1
             my_list.insert(0, my_list[last_index])
 
             last_index = len(my_list)-1
             my_list.pop(last_index)
+        elif key in ['K']:
+            #Press K key to increment list up by 5.
+            for i in range(5):
+                last_index = len(my_list)-1
+                my_list.insert(0, my_list[last_index])
+
+                last_index = len(my_list)-1
+                my_list.pop(last_index)
+
         elif key in ['j', 'KEY_DOWN']:
-            #Press k key to incrment list up.
+            #Press j key to incrment list down.
             last_index = len(my_list)-1
             my_list.append(my_list[0])
 
             last_index = len(my_list)-1
             my_list.pop(0)
+
+        elif key in ['J']:
+            #Press J key to incrment list down by 5.
+            for i in range(5):
+                last_index = len(my_list)-1
+                my_list.append(my_list[0])
+
+                last_index = len(my_list)-1
+                my_list.pop(0)
+
         elif key in ['l', 'KEY_RIGHT']:
             #Open press l, opens up a putty session on the selected device.
             server = selected_item
@@ -255,8 +275,8 @@ def queue(stdscr, my_list=None):
             #q to quit
             break
         elif key == '?':
-            help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.',
-                            ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - break', 'Note: you can search within lists. q to break out.']
+            help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.', 'J - Move down by 5', 'K - Move up by 5',
+                            ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - Go back/quit', 'Note: you can search within lists. q to break out.']
 
             #Generate side menu from options list.
             side_menu(stdscr, help_options)
@@ -338,10 +358,10 @@ def initiate_vars():
         elif arg == '-u':
             #Specify .env SSH_USER variable
             SSH_USER = sys.argv[i+1]
-            print(SSH_USER)
-        elif arg == '-p' and 'SSH_PASS' not in locals():
+        elif arg == '-p' and SSH_PASS == config('SSH_PASS'):
             #Specify .env SSH_PASS variable
             SSH_PASS = getpass.getpass('Temp default session password: ')
+            print(config('SSH_PASS'))
         elif arg == '-t':
             #Specify a terminal emulator
             PLATFORM = sys.argv[i+1]

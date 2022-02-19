@@ -1,8 +1,15 @@
+
+[credentials]
 PLATFORM=[insert your platform here, determines SSH launch program: putty-windows, putty-linux, gnome-terminal, xterm-terminal]
+# Example:  PLATFORM=gnome-terminal
+
 HOST_PATH=/path/to/hosts.csv
 
-SSH_USER=username
-SSH_PASS=password
+# Default username and password for all ssh sessions
+SSH_USER=your_username
+SSH_PASS=your_password
 
+# Example of defining another user/pass, ALT_USER/ALT_PASSWORD can now be passed in the username,password field in hosts.csv for the required host.
 ALT_USER=alt_username
 ALT_PASSWORD=alternative_password1234
+
