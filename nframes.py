@@ -22,7 +22,9 @@ import getpass
 def extra_text(stdscr, y_max, x_max):
     #color definitions, adds support for transparent background.
     curses.use_default_colors()
-    curses.init_pair(1, curses.COLOR_GREEN, -1)
+    curses.init_pair(1, curses.COLOR_GREEN, -1) #IP Selection color
+    curses.init_pair(2, curses.COLOR_WHITE, -1) #IP Selection color
+    curses.init_pair(3, curses.COLOR_BLUE, -1) #Folder color
 
     #Extra text on the rectangle, i.e., (?) help or (q) quit
     stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE, )
@@ -37,7 +39,11 @@ def print_list(stdscr, lst: list, y: int, x:int):
 
     for i in lst:
         if y < y_limit-2:
-            stdscr.addstr(y,x, str(i)+'\t\t\t')
+            if i.find('\t') == -1:
+                #host found in list
+                stdscr.addstr(y,x, str(i)+'\t\t\t', curses.color_pair(3))
+            else:
+                stdscr.addstr(y,x, str(i)+'\t\t\t', curses.color_pair(2))
             y+=1
         else:
             break
