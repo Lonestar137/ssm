@@ -1,3 +1,4 @@
+MONITOR_SERVER_EXISTS=False 
 
 [credentials]
 PLATFORM=[insert your platform here, determines SSH launch program: putty-windows, putty-linux, gnome-terminal, xterm-terminal]

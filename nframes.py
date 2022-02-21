@@ -7,6 +7,7 @@ import re
 
 #Necessary for PuTTy
 import os
+import subprocess
 
 #Necessary for environmental password configuration.
 from decouple import config
@@ -25,11 +26,13 @@ def extra_text(stdscr, y_max, x_max):
     curses.init_pair(1, curses.COLOR_GREEN, -1) #IP Selection color
     curses.init_pair(2, curses.COLOR_WHITE, -1) #IP Selection color
     curses.init_pair(3, curses.COLOR_BLUE, -1) #Folder color
+    curses.init_pair(4, curses.COLOR_RED, -1) #Ping down color
+    curses.init_pair(5, curses.COLOR_YELLOW, -1) #Pinging color
 
     #Extra text on the rectangle, i.e., (?) help or (q) quit
-    stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE, )
-    stdscr.addstr(2, 30, '(?) Help')
-    stdscr.addstr(y_max-2, 30, '(q) Quit')
+    stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
+    stdscr.addstr(2, 30, '(?) Help', curses.color_pair(5))
+    stdscr.addstr(y_max-2, 30, '(q) Quit', curses.color_pair(5))
 
 def print_list(stdscr, lst: list, y: int, x:int):
     #y,x = initial start point.
@@ -49,6 +52,7 @@ def print_list(stdscr, lst: list, y: int, x:int):
             break
 
 def queue(stdscr, my_list=None):
+    curses.curs_set(0)
     #global my_list
     if my_list == None:
         my_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
@@ -86,6 +90,12 @@ def queue(stdscr, my_list=None):
 
     while True:
         max_y, max_x=window.getmaxyx(stdscr)
+        if max_y < 20:
+            stdscr.addstr(0, 0, 'Screen too small, please resize.')
+            stdscr.getch()
+            continue
+        
+
         selected_item = str(my_list[pointer])
 
         curses.init_pair(156, 155, 154)
@@ -211,6 +221,24 @@ def queue(stdscr, my_list=None):
                     pass
         elif key == 'n':
             pass
+        # Ping function
+        elif key == 'p':
+            stdscr.addstr(1, 1, selected_item + ' pinging . . . ', curses.color_pair(5))
+            stdscr.refresh()
+            ping_result = subprocess.run(['ping', '-c', '1', selected_item.strip()], stdout=subprocess.PIPE)
+            if ping_result.returncode == 0:
+                #if up then green
+                stdscr.addstr(1, 1, selected_item + ' is up!\t\t', curses.color_pair(1))
+            else:
+                #if down then red
+                stdscr.addstr(1, 1, selected_item + ' is down!\t\t', curses.color_pair(4))
+            stdscr.getch()
+        elif key == 't':
+            #Toggle, temporarily remove host from list.
+            if selected_item in my_list:
+                my_list.remove(selected_item)
+            else:
+                my_list.append(selected_item)
         #Search function
         elif key == '/':
             stdscr.addstr(1,2,'Search: ', curses.A_STANDOUT)
@@ -282,7 +310,8 @@ def queue(stdscr, my_list=None):
             break
         elif key == '?':
             help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.', 'J - Move down by 5', 'K - Move up by 5',
-                            ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - Go back/quit', 'Note: you can search within lists. q to break out.']
+                            ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - Go back/quit', 'Note: you can search within lists. q to break out.',
+                            ('Host manipulation', curses.A_STANDOUT), 't - Toggle, temporarily removes selected host from list.', 'p - pings the selected host.']
 
             #Generate side menu from options list.
             side_menu(stdscr, help_options)
