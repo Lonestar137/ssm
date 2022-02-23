@@ -24,15 +24,15 @@ def extra_text(stdscr, y_max, x_max):
     #color definitions, adds support for transparent background.
     curses.use_default_colors()
     curses.init_pair(1, curses.COLOR_GREEN, -1) #IP Selection color
-    curses.init_pair(2, curses.COLOR_WHITE, -1) #IP Selection color
-    curses.init_pair(3, curses.COLOR_BLUE, -1) #Folder color
-    curses.init_pair(4, curses.COLOR_RED, -1) #Ping down color
-    curses.init_pair(5, curses.COLOR_YELLOW, -1) #Pinging color
+    curses.init_pair(2, curses.COLOR_YELLOW, -1) #Pinging color #5
+    curses.init_pair(3, curses.COLOR_RED, -1) #Ping down color  #4
+    curses.init_pair(4, curses.COLOR_YELLOW, -1) #IP Selection color # 2
+    curses.init_pair(5, curses.COLOR_RED, -1) #Folder color # 3
 
     #Extra text on the rectangle, i.e., (?) help or (q) quit
     stdscr.addstr(2, 3, 'SSH Sessions', curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
-    stdscr.addstr(2, 30, '(?) Help', curses.color_pair(5))
-    stdscr.addstr(y_max-2, 30, '(q) Quit', curses.color_pair(5))
+    stdscr.addstr(2, 30, '(?) Help', curses.color_pair(2))
+    stdscr.addstr(y_max-2, 30, '(q) Quit', curses.color_pair(2))
 
 def print_list(stdscr, lst: list, y: int, x:int):
     #y,x = initial start point.
@@ -44,9 +44,9 @@ def print_list(stdscr, lst: list, y: int, x:int):
         if y < y_limit-2:
             if i.find('\t') == -1:
                 #host found in list
-                stdscr.addstr(y,x, str(i)+'\t\t\t', curses.color_pair(3))
+                stdscr.addstr(y,x, str(i)+'\t\t\t', curses.color_pair(5))
             else:
-                stdscr.addstr(y,x, str(i)+'\t\t\t', curses.color_pair(2))
+                stdscr.addstr(y,x, str(i)+'\t\t\t', curses.color_pair(4))
             y+=1
         else:
             break
@@ -223,7 +223,7 @@ def queue(stdscr, my_list=None):
             pass
         # Ping function
         elif key == 'p':
-            stdscr.addstr(1, 1, selected_item + ' pinging . . . ', curses.color_pair(5))
+            stdscr.addstr(1, 1, selected_item + ' pinging . . . ', curses.color_pair(2))
             stdscr.refresh()
             ping_result = subprocess.run(['ping', '-c', '1', selected_item.strip()], stdout=subprocess.PIPE)
             if ping_result.returncode == 0:
@@ -231,7 +231,7 @@ def queue(stdscr, my_list=None):
                 stdscr.addstr(1, 1, selected_item + ' is up!\t\t', curses.color_pair(1))
             else:
                 #if down then red
-                stdscr.addstr(1, 1, selected_item + ' is down!\t\t', curses.color_pair(4))
+                stdscr.addstr(1, 1, selected_item + ' is down!\t\t', curses.color_pair(3))
             stdscr.getch()
         elif key == 't':
             #Toggle, temporarily remove host from list.
