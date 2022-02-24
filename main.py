@@ -7,7 +7,6 @@ from decouple import config
 
 import monitor
 
-
 if config("MONITOR_SERVER_EXISTS", cast=bool):
     # You will need to setup your own monitor server.  This is just an example.
     try:
@@ -33,3 +32,9 @@ else:
 #The only relevant line of code if not using a monitor server.
 initiate_vars()
 wrapper(queue)
+
+
+
+
+
+

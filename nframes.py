@@ -225,7 +225,11 @@ def queue(stdscr, my_list=None):
         elif key == 'p':
             stdscr.addstr(1, 1, selected_item + ' pinging . . . ', curses.color_pair(2))
             stdscr.refresh()
-            ping_result = subprocess.run(['ping', '-c', '1', selected_item.strip()], stdout=subprocess.PIPE)
+            if PLATFORM != 'putty-windows':
+                ping_result = subprocess.run(['ping', '-c', '1', selected_item.strip()], stdout=subprocess.PIPE)
+            else:
+                ping_result = subprocess.run(['ping', '-n', '1', selected_item.strip()], stdout=subprocess.PIPE)
+
             if ping_result.returncode == 0:
                 #if up then green
                 stdscr.addstr(1, 1, selected_item + ' is up!\t\t', curses.color_pair(1))
