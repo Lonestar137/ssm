@@ -254,6 +254,8 @@ def queue(stdscr, my_list=None):
                 if key == "q":
                     break
                 elif key == "j":
+                    if word == '':
+                        continue
                     #Check list to see if there is a valid host. Prevents infinite loop if no valid host IP in searched list.
                     valid=False
                     for i in filtered_list:
