@@ -54,6 +54,16 @@ Examples are provided in example hosts and the initial env file.
 NOTE: Main.py contains an example of using a monitor server.  You can remove those lines of code if you do not wish to use one.
 
 
+### Support for ssh-keys  
+Support for SSH_KEYS can be enabled on a host by setting the ssh_key column value = to True and the path to the key equal to the password column variable.  
+#### Example hosts.csv:
+Inside Hosts.csv:  `HostFolder,10.1.1.1,MYUSER,MYKEYFILE,True`
+Inside .env: `MYUSER=genericUser123`
+Inside .env: `MYKEYFILE=path/to/keyfile.pem`
+
+    
+    
+
 
 
 
