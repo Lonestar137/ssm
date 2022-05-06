@@ -163,25 +163,41 @@ def queue(stdscr, my_list=None):
                         #The .env variable needs to be assigned in the .csv file in the username/password fields.
                         UNIQUE_USER = config(host[1])
                         UNIQUE_PASS = config(host[2])
+                        has_key = bool(host[3])
+
                         if PLATFORM == 'gnome-terminal':
                             try:
-                                target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
+                                if(has_key):
+                                    target="gnome-terminal -- ssh -i "+UNIQUE_PASS+" -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
+                                    stdscr.addstr(10,10, target)
+                                    stdscr.getch()
+                                else:
+                                    target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
                                 os.system(target)
                             except:
                                 stdscr.addstr(1,1,'gnome-terminal command not found.')
                         elif PLATFORM == 'putty-linux':
                             try:
-                                os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
+                                if(has_key):
+                                    os.system('putty -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server+' &')
+                                else:
+                                    os.system('putty -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server+' &')
                             except:
                                 stdscr.addstr(1,1,'putty command not found.')
                         elif PLATFORM == 'putty-windows':
                             try:
-                                os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
+                                if(has_key):
+                                    os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
+                                else:
+                                    os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
                             except:
                                 stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
                         elif PLATFORM == 'xterm-terminal':
                             try:
-                                target='xterm -hold -e \"sshpass -p '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
+                                if(has_key):
+                                    target='xterm -hold -e \"sshpass -i '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
+                                else:
+                                    target='xterm -hold -e \"sshpass -p '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
                                 os.system(target)
                             except:
                                 stdscr.addstr(1,1,'xterm command not found.')
@@ -342,7 +358,7 @@ def read_csv(csv_file):
         reader = csv.DictReader(hosts_file)
         for row in reader:
             if row['username'] != None and row['password'] != None:
-                unique_hosts[row['location']].append((row['ip'], row['username'], row['password']))
+                unique_hosts[row['location']].append((row['ip'], row['username'], row['password'], row['ssh_key']))
 
             hosts[row['location']].append(row['ip'])
 
