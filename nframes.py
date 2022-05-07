@@ -168,9 +168,9 @@ def queue(stdscr, my_list=None):
                         if PLATFORM == 'gnome-terminal':
                             try:
                                 if(has_key):
-                                    target="gnome-terminal -- ssh -i "+UNIQUE_PASS+" -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
+                                    target="gnome-terminal -- ssh -i "+UNIQUE_PASS+" -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' ssh://"+UNIQUE_USER+"@"+server.strip()
                                 else:
-                                    target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
+                                    target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' ssh://"+UNIQUE_USER+"@"+server.strip()
                                 os.system(target)
                             except:
                                 stdscr.addstr(1,1,'gnome-terminal command not found.')
@@ -193,9 +193,9 @@ def queue(stdscr, my_list=None):
                         elif PLATFORM == 'xterm-terminal':
                             try:
                                 if(has_key):
-                                    target='xterm -hold -e \"sshpass -i '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
+                                    target='xterm -hold -e \"sshpass -i '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' ssh://'+UNIQUE_USER+'@'+server.strip()+'\" '
                                 else:
-                                    target='xterm -hold -e \"sshpass -p '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+UNIQUE_USER+'@'+server.strip()+'\" '
+                                    target='xterm -hold -e \"sshpass -p '+UNIQUE_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' ssh://'+UNIQUE_USER+'@'+server.strip()+'\" '
                                 os.system(target)
                             except:
                                 stdscr.addstr(1,1,'xterm command not found.')
@@ -209,7 +209,7 @@ def queue(stdscr, my_list=None):
             if found == False:
                 if PLATFORM == 'gnome-terminal':
                     try:
-                        target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+SSH_USER+"@"+server.strip()
+                        target="gnome-terminal -- sshpass -p " + SSH_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' ssh://"+SSH_USER+"@"+server.strip()
                         os.system(target)
                     except:
                         stdscr.addstr(1,1,'gnome-terminal command not found.')
@@ -225,7 +225,7 @@ def queue(stdscr, my_list=None):
                         stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
                 elif PLATFORM == 'xterm-terminal':
                     try:
-                        target='xterm -hold -e \"sshpass -p '+SSH_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' '+SSH_USER+'@'+server.strip()+'\" '
+                        target='xterm -hold -e \"sshpass -p '+SSH_PASS+' ssh -o \'UserKnownHostsFile=/dev/null\' -o \'StrictHostKeyChecking=no\' ssh://'+SSH_USER+'@'+server.strip()+'\" '
                         os.system(target)
                     except:
                         stdscr.addstr(1,1,'xterm command not found')

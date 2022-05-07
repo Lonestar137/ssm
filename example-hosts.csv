@@ -12,3 +12,5 @@ Examples,10.10.1.5,ALT_USER,ALTKEYFILE,True
 Examples,10.80.10.1,My_work_user,work_password
 Examples,10.80.10.2,ANOTHER_work_user,ANOTHER_work_password
 
+
+CloudVMs,174.80.1.1:2222,CLOUD_USER,CLOUD_KEY,True

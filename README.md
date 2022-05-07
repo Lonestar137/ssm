@@ -61,7 +61,15 @@ Inside Hosts.csv:  `HostFolder,10.1.1.1,MYUSER,MYKEYFILE,True`
 Inside .env: `MYUSER=genericUser123`
 Inside .env: `MYKEYFILE=path/to/keyfile.pem`
 
-    
+### Defining a different port      
+
+Note: currently, all terminals support variable port assignment EXCEPT Putty.
+
+To use a different port simply define it in your hosts.csv like so: `Home,10.1.1.1:9999`  
+
+
+
+
     
 
 
