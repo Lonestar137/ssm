@@ -169,8 +169,6 @@ def queue(stdscr, my_list=None):
                             try:
                                 if(has_key):
                                     target="gnome-terminal -- ssh -i "+UNIQUE_PASS+" -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
-                                    stdscr.addstr(10,10, target)
-                                    stdscr.getch()
                                 else:
                                     target="gnome-terminal -- sshpass -p " + UNIQUE_PASS +" ssh -o 'UserKnownHostsFile=/dev/null' -o 'StrictHostKeyChecking=no' "+UNIQUE_USER+"@"+server.strip()
                                 os.system(target)
