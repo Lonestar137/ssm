@@ -53,6 +53,12 @@ def print_list(stdscr, lst: list, y: int, x:int):
             break
 
 def queue(stdscr, my_list=None):
+    #Startup screen for firsttime installers.
+    if show_startup:
+        stdscr.addstr(0,0, logo)
+        stdscr.getch()
+        stdscr.clear()
+
     curses.curs_set(0)
     #global my_list
     if my_list == None:
@@ -332,6 +338,7 @@ def queue(stdscr, my_list=None):
         elif key == '?':
             help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.', 'J - Move down by 5', 'K - Move up by 5',
                             ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - Go back/quit', 'Note: you can search within lists. q to break out.',
+                            ('Config Files', curses.A_STANDOUT), f'Stored at: {datastore}',
                             ('Host manipulation', curses.A_STANDOUT), 't - Toggle, temporarily removes selected host from list.', 'p - pings the selected host.']
 
             #Generate side menu from options list.

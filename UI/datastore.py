@@ -65,6 +65,7 @@ ALTKEYFILE=path/to/keyfile.pem"""
 
 
 def check_datastore(path: str):
+    global show_startup
     #Check if the app folder exists in user data dir, if not then create it.
 
     app_folder_exists: bool = os.path.isdir(path)
@@ -72,6 +73,7 @@ def check_datastore(path: str):
         if not app_folder_exists:
             os.makedirs(path)
             create_config_files(path)
+            show_startup = True
 
     except Exception as e:
         print(e)
@@ -83,14 +85,27 @@ def check_datastore(path: str):
 
 
 
-
-
-
-
-
 appname = "ssm"
 appauthor = "Garrett Jones"
 datastore = user_data_dir(appname, appauthor)
+
+show_startup = False
+logo: str = f"""
+██████╗███████╗███╗   ███╗
+██╔════╝██╔════╝████╗ ████║
+███████╗███████╗██╔████╔██║
+╚════██║╚════██║██║╚██╔╝██║
+███████║███████║██║ ╚═╝ ██║
+╚══════╝╚══════╝╚═╝     ╚═╝
+                          
+Welcome to SSM(Simple SSH Manager)
+
+Config files stored at: {datastore}
+If you forget you can always see this dir by using the ? key.
+
+Press any key to continue. . . 
+"""
+
 
 
 
@@ -99,6 +114,8 @@ check_datastore(datastore)
 
 #Change default config lookup path to the OS indepent config path. .env should be stored here.
 config = AutoConfig(search_path=datastore)
+
+
 
 
 
