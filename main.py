@@ -1,11 +1,11 @@
 import time
-import nframes
-from nframes import queue
-from nframes import initiate_vars
+import UI.nframes
+from UI.nframes import queue
+from UI.nframes import initiate_vars
 from curses import wrapper
 from decouple import config
 
-import monitor
+import UI.monitor
 
 if config("MONITOR_SERVER_EXISTS", cast=bool):
     # You will need to setup your own monitor server.  This is just an example.
