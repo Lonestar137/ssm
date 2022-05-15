@@ -3,10 +3,14 @@ import UI.nframes
 from UI.nframes import queue
 from UI.nframes import initiate_vars
 from curses import wrapper
-from decouple import config
+from decouple import config, AutoConfig
 
+from UI.datastore import *
 import UI.monitor
 
+
+
+#config = AutoConfig(search_path='/home/jonesgc/.local/share/ssm/')
 if config("MONITOR_SERVER_EXISTS", cast=bool):
     # You will need to setup your own monitor server.  This is just an example.
     try:

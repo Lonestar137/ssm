@@ -11,6 +11,7 @@ import subprocess
 
 #Necessary for environmental password configuration.
 from decouple import config
+from UI.datastore import *
 
 #For reading and updating csv during runtime
 import csv
@@ -185,9 +186,9 @@ def queue(stdscr, my_list=None):
                         elif PLATFORM == 'putty-windows':
                             try:
                                 if(has_key):
-                                    os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
+                                    os.system('START /B '+datastore+'\\putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
                                 else:
-                                    os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
+                                    os.system('START /B '+datastore+'\\putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
                             except:
                                 stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
                         elif PLATFORM == 'xterm-terminal':

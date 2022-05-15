@@ -1,4 +1,4 @@
 python-decouple
+getpass
 requests
 windows-curses
-getpass
