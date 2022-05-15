@@ -1,4 +1,5 @@
 python-decouple
 getpass
 requests
+appdirs
 windows-curses

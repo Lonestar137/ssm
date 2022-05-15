@@ -2,6 +2,7 @@ from appdirs import *
 from decouple import AutoConfig, config
 import os
 import shutil
+from os.path import exists
 
 #DATASTORE setup file for .env and hosts.csv files.
 
@@ -12,16 +13,16 @@ def create_config_files(path: str):
         path += '\\'
         platform = 'putty-windows'
         #mv putty.exe to correct location.
-        shutil.move(cwd+'/putty.exe', path)
+        #TODO change this to copy, to avoid error
+        #shutil.move(cwd+'/putty.exe', path)
     else:
         path += '/'
         platform = 'putty-linux'
 
-
-
-    # Create hosts.csv, w+ create if not exists
-    with open(path+'hosts.csv', 'a+') as hostf, open(path+'.env', 'a+') as envf:
-        text = """location,ip,username,password,ssh_key
+    if not exists(path+'.env') or not exists(path+'hosts.csv'):
+        # Create hosts.csv, w+ create if not exists
+        with open(path+'hosts.csv', 'a+') as hostf, open(path+'.env', 'a+') as envf:
+            text = """location,ip,username,password,ssh_key
 Home,127.0.0.1
 
 Office,10.10.1.1
@@ -36,9 +37,9 @@ Examples,10.80.10.1,My_work_user,work_password
 Examples,10.80.10.2,ANOTHER_work_user,ANOTHER_work_password
 
 CloudVMs,174.80.1.1:2222,CLOUD_USER,CLOUD_KEY,True"""
-        hostf.write(text)
+            hostf.write(text)
 
-        env_text = f"""MONITOR_SERVER_EXISTS=False 
+            env_text = f"""MONITOR_SERVER_EXISTS=False 
 
 [credentials]
 # PLATFORM=[insert your platform here, determines SSH launch program: putty-windows, putty-linux, gnome-terminal, xterm-terminal]
@@ -56,7 +57,7 @@ ALT_USER=alt_username
 ALT_PASSWORD=alternative_password1234
 ALTKEYFILE=path/to/keyfile.pem"""
 
-        envf.write(env_text)
+            envf.write(env_text)
 
 
 
@@ -72,7 +73,6 @@ def check_datastore(path: str):
     try:
         if not app_folder_exists:
             os.makedirs(path)
-            create_config_files(path)
             show_startup = True
 
     except Exception as e:
@@ -111,6 +111,8 @@ Press any key to continue. . .
 
 #CHECKS, creates config, dirs,files if necessary
 check_datastore(datastore)
+create_config_files(datastore)
+
 
 #Change default config lookup path to the OS indepent config path. .env should be stored here.
 config = AutoConfig(search_path=datastore)
