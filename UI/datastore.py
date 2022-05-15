@@ -86,7 +86,7 @@ def check_datastore(path: str):
 
 
 appname = "ssm"
-appauthor = "Garrett Jones"
+appauthor = "Lonestar137"
 datastore = user_data_dir(appname, appauthor)
 
 show_startup = False

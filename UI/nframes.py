@@ -193,9 +193,9 @@ def queue(stdscr, my_list=None):
                             cwd = os.getcwd()
                             try:
                                 if(has_key):
-                                    os.system('START /B '+cwd+'\\putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
+                                    os.system('START /B '+cwd+'\\UI\\putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
                                 else:
-                                    os.system('START /B '+cwd+'\\putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
+                                    os.system('START /B '+cwd+'\\UI\\putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
                             except:
                                 stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
                         elif PLATFORM == 'xterm-terminal':
