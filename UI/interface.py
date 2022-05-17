@@ -67,7 +67,7 @@ def new_host_screen(stdscr):
         rectangle(stdscr, 2,2,len(options)+3,40)
         stdscr.addstr(2,3,"Add a host:", curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
         stdscr.refresh()
-        stdscr.addstr(len(options)+3,3,"(q) Back, (Enter) Save", curses.color_pair(2))
+        stdscr.addstr(len(options)+3,3,"(<=) Back, (Enter) Save", curses.color_pair(2))
         #stdscr.addstr(max_y-2, 3,"(q) Back, (Enter) Save", curses.color_pair(2))
 
 
@@ -112,7 +112,7 @@ def new_host_screen(stdscr):
                     options[curr_option][1],
                     options[curr_option][2]+options[curr_option][3],
                     curses.A_STANDOUT)
-        elif(key == "q"):
+        elif(key in ["KEY_RIGHT", "KEY_LEFT"]):
             break
         elif(key == "KEY_BACKSPACE"):
             stdscr.refresh()

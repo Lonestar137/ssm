@@ -248,6 +248,8 @@ def queue(stdscr, my_list=None):
             stdscr.clear()
             new_host_screen(stdscr)
             curses.curs_set(0)
+            my_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
+
         elif key == 'p':
             # Ping function
             stdscr.addstr(1, 1, selected_item + ' pinging . . . ', curses.color_pair(2))
