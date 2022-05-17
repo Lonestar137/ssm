@@ -12,6 +12,7 @@ import subprocess
 #Necessary for environmental password configuration.
 from decouple import config
 from UI.datastore import *
+from UI.interface import new_host_screen
 
 #For reading and updating csv during runtime
 import csv
@@ -242,9 +243,13 @@ def queue(stdscr, my_list=None):
                     stdscr.addstr(3, 30, '.env Variable PLATFORM is not set correctly.')  
                     pass
         elif key == 'n':
-            pass
-        # Ping function
+            #new host function
+            curses.curs_set(1)
+            stdscr.clear()
+            new_host_screen(stdscr)
+            curses.curs_set(0)
         elif key == 'p':
+            # Ping function
             stdscr.addstr(1, 1, selected_item + ' pinging . . . ', curses.color_pair(2))
             stdscr.refresh()
             if PLATFORM != 'putty-windows':
@@ -339,7 +344,7 @@ def queue(stdscr, my_list=None):
         elif key == '?':
             help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.', 'J - Move down by 5', 'K - Move up by 5',
                             ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - Go back/quit', 'Note: you can search within lists. q to break out.',
-                            ('Config Files', curses.A_STANDOUT), f'Stored at: {datastore}',
+                            ('Config Files', curses.A_STANDOUT), f'Stored at: {datastore}','n - create a new host',
                             ('Host manipulation', curses.A_STANDOUT), 't - Toggle, temporarily removes selected host from list.', 'p - pings the selected host.']
 
             #Generate side menu from options list.

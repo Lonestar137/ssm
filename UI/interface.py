@@ -20,92 +20,133 @@ from collections import defaultdict
 import sys
 import getpass
 
+from UI.datastore import *
+#from datastore import *
 
 
+def create_env_variable(possible_env_var_name, username: str, password: str):
+    #Checks .env to see if the password already exists, if not create new one, elif exists use original.
 
+    if(password == ''):
+        return '', ''
 
-class MenuBox:
+    with open(datastore+'/.env', 'r') as f:
+        file = f.read().split('\n')
 
-    def __init__(stdscr):
-        stdscr = stdscr
-        options: list = []
+    values_keys = dict()
+    for line in file:
+        if(line.find('=') != -1):
+            pv = line.strip().split('=')
+            values_keys.update({pv[1]: pv[0]})
 
-    def text_box(text: str, topLeftCorner: int, topRightCorner: int, y: int):
-        # loads options to screen
-        rectangle(stdscr, 2,2,max_y-2,40)
-        
-        #if options to display = options[slice:y-1]
-
-    def add_text_option(option: str):
-        # Adds an option the list
-        options.append(option) 
-
-
-
-    def initial_start_screen():
-        logo: str = """
-        ██████╗███████╗███╗   ███╗
-        ██╔════╝██╔════╝████╗ ████║
-        ███████╗███████╗██╔████╔██║
-        ╚════██║╚════██║██║╚██╔╝██║
-        ███████║███████║██║ ╚═╝ ██║
-        ╚══════╝╚══════╝╚═╝     ╚═╝
-                                  
-        """
-
-
-       
-    
-#Need to create an intro screen with some SSM ascii
-
-def start_screen():
-    logo: str = """
-    ██████╗███████╗███╗   ███╗
-    ██╔════╝██╔════╝████╗ ████║
-    ███████╗███████╗██╔████╔██║
-    ╚════██║╚════██║██║╚██╔╝██║
-    ███████║███████║██║ ╚═╝ ██║
-    ╚══════╝╚══════╝╚═╝     ╚═╝
-                              
-    """
-
-    stdscr(5, 30, )
-
-def test_textpad(stdscr, insert_mode=False):
-    #TODO make this text box size of window, then move hosts.csv here.  Have option to save to file, this function should return the information as a csv string.
-
-    ncols, nlines = 40, 10 
-    uly, ulx = 3, 2
-    if insert_mode:
-        mode = 'insert mode'
+    if(username in values_keys and password in values_keys):
+        #password exists, return the existing envvar name
+        return values_keys[username], values_keys[password]
     else:
-        mode = 'overwrite mode'
+        #if not exists, add to .env and return new variables.
+        name = possible_env_var_name
+        index = str(len(values_keys))
+        envuser, envpassw = name+'User'+index, name+'Pass'+index
 
-    stdscr.addstr(uly-3, ulx, "Use Ctrl-G to end editing (%s)." % mode)
-    stdscr.addstr(uly-2, ulx, "Be sure to try typing in the lower-right corner.")
-    win = curses.newwin(nlines, ncols, uly, ulx)
-    rectangle(stdscr, uly-1, ulx-1, uly + nlines, ulx + ncols)
-    stdscr.refresh()
+        #Write the changes.
+        with open(datastore+'/.env', 'a') as f:
+            newVariables = f'\n{envuser}={username}\n{envpassw}={password}'
+            file = f.write(newVariables)
 
-    box = Textbox(win, insert_mode)
-    contents = box.edit() # Getting the contents of the box as a string.
-
-    stdscr.addstr(uly+ncols+2, 0, "Text entered in the box\n")
-    stdscr.addstr(repr(contents))
-    stdscr.addstr('\n')
-    stdscr.addstr('Press any key')
-    stdscr.getch()
-
-    for i in range(3):
-        stdscr.move(uly+ncols+2 + i, 0)
-        stdscr.clrtoeol()
+        return envuser, envpassw
+    
 
 
+def new_host_screen(stdscr):
+    #               (y, x, field, answer)
+    options: list = [(3, 3, "location: ", ""), (4, 3, "ip: ", ""), (5, 3, "username: ", ""), (6, 3, "password: ", ""), (7, 3, "ssh_key: ", "")]
+    curr_option = 0
+    while True:
+
+        max_y, max_x=window.getmaxyx(stdscr)
+        rectangle(stdscr, 2,2,len(options)+3,40)
+        stdscr.addstr(2,3,"Add a host:", curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
+        stdscr.refresh()
+        stdscr.addstr(len(options)+3,3,"(q) Back, (Enter) Save", curses.color_pair(2))
+        #stdscr.addstr(max_y-2, 3,"(q) Back, (Enter) Save", curses.color_pair(2))
+
+
+        for option in options:
+            #Hide password as it's printed
+            if(option[2] == 'password: '):
+                hiddenpass = option[3].replace(option[3], '*') * len(option[3])
+                stdscr.addstr(option[0], option[1], option[2]+hiddenpass)
+            else:
+                stdscr.addstr(option[0], option[1], option[2]+option[3])
+
+        if(curr_option == 3):
+            # Hide password as it's typed.
+            hiddenpass = options[curr_option][3].replace(options[curr_option][3], '*') * len(options[curr_option][3])
+            stdscr.addstr(options[curr_option][0],
+                    options[curr_option][1],
+                    options[curr_option][2]+hiddenpass)
+            
+        else:
+            stdscr.addstr(options[curr_option][0],
+                    options[curr_option][1],
+                    options[curr_option][2]+options[curr_option][3])
+
+        key = stdscr.getkey()
+        stdscr.clear()
+        if(key == "KEY_DOWN"):
+            if(curr_option == -1 or curr_option == len(options)-1):
+                curr_option = 0
+            else:
+                curr_option += 1
+
+            stdscr.addstr(options[curr_option][0],
+                    options[curr_option][1], 
+                    options[curr_option][2]+options[curr_option][3],
+                    curses.A_STANDOUT)
+        elif(key == "KEY_UP"):
+            if(curr_option == -1 or curr_option == len(options)):
+                curr_option = len(options)-1
+            else:
+                curr_option -= 1
+            stdscr.addstr(options[curr_option][0],
+                    options[curr_option][1],
+                    options[curr_option][2]+options[curr_option][3],
+                    curses.A_STANDOUT)
+        elif(key == "q"):
+            break
+        elif(key == "KEY_BACKSPACE"):
+            stdscr.refresh()
+            options[curr_option] = (options[curr_option][0], 
+                    options[curr_option][1], 
+                    options[curr_option][2],
+                    options[curr_option][3][:-1])
+        elif(key == "\n"):
+            envVarUser, envVariablePass = create_env_variable(options[0][3], options[2][3], options[3][3]) #generate envvar from location if it doesn't already exist.
+            csv_line = f'{options[0][3]},{options[1][3]},{envVarUser},{envVariablePass},{options[4][3]}'
+
+            stdscr.addstr(len(options)-1, options[curr_option][1], 'Save the following host?(y/n)')
+            stdscr.addstr(len(options), options[curr_option][1], csv_line)
+            key = stdscr.getkey()
+            if(key in ['\n', 'y', 'Y', 'yes', 'Yes']):
+                #Append the new host to the hosts.csv
+                stdscr.addstr(len(options)+1, options[curr_option][1], "Saved!")
+                with open(datastore+'/hosts.csv', 'a') as f:
+                    f.write('\n'+csv_line)
+                
+                stdscr.getch()
+                stdscr.clear()
+            else:
+                stdscr.clear()
+                
+        else:
+            options[curr_option] = (options[curr_option][0], 
+                    options[curr_option][1],
+                    options[curr_option][2],
+                    options[curr_option][3]+ key)
 
 
 def start(stdscr):
-    #test = MenuBox(stdscr)
-    test_textpad(stdscr)
+    new_host_screen(stdscr)
 
 
 
@@ -113,11 +154,7 @@ def start(stdscr):
 
 if __name__ == "__main__":   
     #NOTE this file is currently not used but planned for future implementations.
-
     wrapper(start)
-
-
-    print("etst")
 
     
 
