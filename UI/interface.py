@@ -6,8 +6,7 @@ from curses.textpad import Textbox, rectangle
 import re
 
 #Necessary for PuTTy
-import os
-import subprocess
+import os, subprocess, platform
 
 #Necessary for environmental password configuration.
 from decouple import config
@@ -23,8 +22,16 @@ import getpass
 from UI.datastore import *
 #from datastore import *
 
+def prune_env(envuser: str, envpass: str):
+    # Remove all the non used env variables from .env
+    # # Remove all the non used env variables from .env
+    create_env_variable('NULL', envuser, envpass)
 
-def create_env_variable(possible_env_var_name, username: str, password: str):
+def delete_host(location, ip):
+    my_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
+    pass
+
+def create_env_variable(possible_env_var_name: str, username: str, password: str):
     #Checks .env to see if the password already exists, if not create new one, elif exists use original.
 
     if(password == ''):
@@ -67,9 +74,8 @@ def new_host_screen(stdscr):
         rectangle(stdscr, 2,2,len(options)+3,40)
         stdscr.addstr(2,3,"Add a host:", curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
         stdscr.refresh()
-        stdscr.addstr(len(options)+3,3,"(<=) Back, (Enter) Save", curses.color_pair(2))
-        #stdscr.addstr(max_y-2, 3,"(q) Back, (Enter) Save", curses.color_pair(2))
-
+        stdscr.addstr(len(options)+3,3,"(<=) Back, (Enter) Save ", curses.color_pair(2))
+        stdscr.addstr(len(options)+4,3,"(=>) Batch create", curses.color_pair(2))
 
         for option in options:
             #Hide password as it's printed
@@ -85,7 +91,7 @@ def new_host_screen(stdscr):
             stdscr.addstr(options[curr_option][0],
                     options[curr_option][1],
                     options[curr_option][2]+hiddenpass)
-            
+
         else:
             stdscr.addstr(options[curr_option][0],
                     options[curr_option][1],
@@ -112,8 +118,23 @@ def new_host_screen(stdscr):
                     options[curr_option][1],
                     options[curr_option][2]+options[curr_option][3],
                     curses.A_STANDOUT)
-        elif(key in ["KEY_RIGHT", "KEY_LEFT"]):
+        elif(key in ["KEY_LEFT"]):
             break
+        elif(key in ["KEY_RIGHT"]):
+            #Open hosts.csv in editor.
+            try:
+                if(platform.system() == "Darwin"): #if mac
+                    subprocess.call(('open', datastore+'/hosts.csv'))
+                elif(platform.system() == "Windows"):
+                    os.system("start " + datastore+'\\hosts.csv')
+                else:
+                    subprocess.call(('xdg-open', datastore+'/hosts.csv'))
+            except Exception as e:
+                stdscr.clear()
+                stdscr.addstr(1,1,"An exception occurred: \n"+ str(e))
+                stdscr.getch()
+                break
+
         elif(key == "KEY_BACKSPACE"):
             stdscr.refresh()
             options[curr_option] = (options[curr_option][0], 
@@ -145,8 +166,6 @@ def new_host_screen(stdscr):
                     options[curr_option][3]+ key)
 
 
-def start(stdscr):
-    new_host_screen(stdscr)
 
 
 
@@ -154,10 +173,4 @@ def start(stdscr):
 
 if __name__ == "__main__":   
     #NOTE this file is currently not used but planned for future implementations.
-    wrapper(start)
-
-    
-
-
-
-
+    wrapper(new_host_screen())
