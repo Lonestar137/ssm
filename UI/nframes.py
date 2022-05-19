@@ -12,7 +12,7 @@ import subprocess
 #Necessary for environmental password configuration.
 from decouple import config
 from UI.datastore import *
-from UI.interface import new_host_screen
+from UI.interface import delete_host, new_host_screen
 
 #For reading and updating csv during runtime
 import csv
@@ -107,9 +107,12 @@ def queue(stdscr, my_list=None):
         selected_item = str(my_list[pointer])
 
         curses.init_pair(156, 155, 154)
-        #Place highlighted ontop of the list.  But place selected object in the center always and use color_pair 1 to make green. 
-        stdscr.addstr(list_y+pointer, list_x, '\t\t'+selected_item, curses.A_STANDOUT | curses.color_pair(1))
-    
+        #Place highlighted ontop of the list.  But place selected object in the center always and use color_pair 1 to make green.
+        if(len(selected_item) > 18):
+            #limits number of chars on selected item to prevent clipping.
+            stdscr.addstr(list_y+pointer, list_x, '\t\t'+selected_item[:18], curses.A_STANDOUT | curses.color_pair(1))
+        else:
+            stdscr.addstr(list_y+pointer, list_x, '\t\t'+selected_item, curses.A_STANDOUT | curses.color_pair(1))
 
         #Frame, try - to prevent crash if window size becomes too small.
         try:
@@ -249,6 +252,14 @@ def queue(stdscr, my_list=None):
             new_host_screen(stdscr)
             curses.curs_set(0)
             my_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
+
+        elif key == 'd':
+            #delete host
+            #TODO
+            stdscr.addstr(1,2,'DELETE host? '+selected_item, curses.A_STANDOUT)
+            delete_host(selected_item)
+
+
 
         elif key == 'p':
             # Ping function
@@ -441,6 +452,9 @@ def initiate_vars():
 
     #Create dictionary
     hosts_dict, unique_hosts_dict = read_csv(PATH)
+    #hosts_dict -- {'location': [ip, ip]}
+    #unique_hosts_dct -- {'location': [(ip, usr, pass, T/F)]}
+
     hosts_list = dict_to_list(hosts_dict)
     #print(unique_hosts_dict)
 
