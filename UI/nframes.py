@@ -12,7 +12,7 @@ import subprocess
 #Necessary for environmental password configuration.
 from decouple import config
 from UI.datastore import *
-from UI.interface import delete_host, new_host_screen
+from UI.interface import delete_host, new_host_screen, hosts_csv, dot_env
 
 #For reading and updating csv during runtime
 import csv
@@ -255,9 +255,15 @@ def queue(stdscr, my_list=None):
 
         elif key == 'd':
             #delete host
-            #TODO
-            stdscr.addstr(1,2,'DELETE host? '+selected_item, curses.A_STANDOUT)
-            delete_host(selected_item)
+            stdscr.addstr(1,2,'DELETE host?(y/n) '+selected_item[1:], curses.A_STANDOUT)
+            ans = stdscr.getkey()
+            if(ans in ['y', 'Y']):
+                #delete_host(selected_item[1:])
+                hosts_csv.deleteLineWhere(selected_item[1:])
+                #refresh
+            else:
+                stdscr.addstr(1,2,'Not deleted'+selected_item[1:]+' '+ans, curses.A_STANDOUT)
+                ans = stdscr.getch()
 
 
 
@@ -358,7 +364,7 @@ def queue(stdscr, my_list=None):
             help_options = [('Movement', curses.A_STANDOUT), 'j - down', 'k - up', 'l - open selected session.', 'J - Move down by 5', 'K - Move up by 5',
                             ('Searching', curses.A_STANDOUT), '/ - To begin search.', 'j - To select an option.', 'q - Go back/quit', 'Note: you can search within lists. q to break out.',
                             ('Config Files', curses.A_STANDOUT), f'Stored at: {datastore}','n - create a new host',
-                            ('Host manipulation', curses.A_STANDOUT), 't - Toggle, temporarily removes selected host from list.', 'p - pings the selected host.']
+                            ('Host manipulation', curses.A_STANDOUT), 't - Toggle, temporarily removes selected host from list.', 'p - pings the selected host.', 'd - delete the host(deletes first IP match in hosts.csv)']
 
             #Generate side menu from options list.
             side_menu(stdscr, help_options)

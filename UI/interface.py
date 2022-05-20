@@ -22,14 +22,73 @@ import getpass
 from UI.datastore import *
 #from datastore import *
 
+#TODO set platform
+#TODO open .env
+#TODO def set default user/pass
+
+
+#TODO write a file class that is agnostic to platform with read write operations.
+class Config_File:
+    def __init__(self, path: str):
+        self._path: str = path
+        self._file: str = self.read()
+
+    def read(self)->str:
+        #Read file to string.
+        with open(self._path, 'r') as f:
+            self._file = f.read()
+        return self._file
+
+    def append(self, line: str):
+        #append line to file.
+        with open(self._path, 'a') as f:
+            f.write(line)
+
+    def write(self, s: str):
+        # Write a string
+        with open(self._path, 'w') as f:
+            f.write(s)
+
+        self.read()
+
+    #TODO def find and replace line
+
+    def deleteLineWhere(self, s: str):
+        #TODO add kwargs support so more than one expression can be applied.  Find where this and this are both in line.
+
+        #Delete a line where string found
+        lines: list = self._file.splitlines()
+        for index, line in enumerate(lines):
+            if(line.find(s) != -1):
+                lines.pop(index)
+                break
+
+        # Recombine to write the new file.
+        f: str = ''
+        for line in lines:
+            f += line+'\n'
+
+        self.write(f)
+
+
+
+
+
+
+
+
+
+
+
 def prune_env(envuser: str, envpass: str):
     # Remove all the non used env variables from .env
     # # Remove all the non used env variables from .env
     create_env_variable('NULL', envuser, envpass)
 
-def delete_host(location, ip):
-    my_list, SSH_USER, SSH_PASS, unique_hosts_dict, PLATFORM = initiate_vars()
-    pass
+def delete_host(ip):
+    #Delete a specific host from the hosts.csv, note delets the first match by IP.
+    hosts_csv.deleteLineWhere(ip)
+
 
 def create_env_variable(possible_env_var_name: str, username: str, password: str):
     #Checks .env to see if the password already exists, if not create new one, elif exists use original.
@@ -37,8 +96,12 @@ def create_env_variable(possible_env_var_name: str, username: str, password: str
     if(password == ''):
         return '', ''
 
-    with open(datastore+'/.env', 'r') as f:
-        file = f.read().split('\n')
+    if(platform.system() == "Windows"):
+        with open(datastore+'\\.env', 'r') as f:
+            file = f.read().split('\n')
+    else:
+        with open(datastore+'/.env', 'r') as f:
+            file = f.read().split('\n')
 
     values_keys = dict()
     for line in file:
@@ -56,20 +119,25 @@ def create_env_variable(possible_env_var_name: str, username: str, password: str
         envuser, envpassw = name+'User'+index, name+'Pass'+index
 
         #Write the changes.
-        with open(datastore+'/.env', 'a') as f:
-            newVariables = f'\n{envuser}={username}\n{envpassw}={password}'
-            file = f.write(newVariables)
+        if(platform.system() == "Windows"):
+            with open(datastore+'\\.env', 'a') as f:
+                newVariables = f'\n{envuser}={username}\n{envpassw}={password}'
+                file = f.write(newVariables)
+        else:
+            with open(datastore+'/.env', 'a') as f:
+                newVariables = f'\n{envuser}={username}\n{envpassw}={password}'
+                file = f.write(newVariables)
 
         return envuser, envpassw
     
 
 
 def new_host_screen(stdscr):
+
     #               (y, x, field, answer)
-    options: list = [(3, 3, "location: ", ""), (4, 3, "ip: ", ""), (5, 3, "username: ", ""), (6, 3, "password: ", ""), (7, 3, "ssh_key: ", "")]
+    options: list = [(3, 3, "location: ", ""), (4, 3, "ip: ", ""), (5, 3, "username: ", ""), (6, 3, "password: ", ""), (7, 3, "ssh_key(T/F): ", "")]
     curr_option = 0
     while True:
-
         max_y, max_x=window.getmaxyx(stdscr)
         rectangle(stdscr, 2,2,len(options)+3,40)
         stdscr.addstr(2,3,"Add a host:", curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
@@ -77,15 +145,28 @@ def new_host_screen(stdscr):
         stdscr.addstr(len(options)+3,3,"(<=) Back, (Enter) Save ", curses.color_pair(2))
         stdscr.addstr(len(options)+4,3,"(=>) Batch create", curses.color_pair(2))
 
+        if(options[4][3] == 'True'):
+            # Changes password field to key_path if ssh_key=True.
+            options[3] = (options[3][0],
+                    options[3][1],
+                    'key_path: ',
+                    options[3][3])
+        else:
+            options[3] = (options[3][0],
+                    options[3][1],
+                    'password: ',
+                    options[3][3])
+
+
         for option in options:
-            #Hide password as it's printed
-            if(option[2] == 'password: '):
+            #Hide password as it's printed, and it's not a ssh key path.
+            if(option[2] == 'password: ' and options[4][3] != 'True'):
                 hiddenpass = option[3].replace(option[3], '*') * len(option[3])
                 stdscr.addstr(option[0], option[1], option[2]+hiddenpass)
             else:
                 stdscr.addstr(option[0], option[1], option[2]+option[3])
 
-        if(curr_option == 3):
+        if(curr_option == 3 and options[4][3] != 'True'):
             # Hide password as it's typed.
             hiddenpass = options[curr_option][3].replace(options[curr_option][3], '*') * len(options[curr_option][3])
             stdscr.addstr(options[curr_option][0],
@@ -150,10 +231,8 @@ def new_host_screen(stdscr):
             key = stdscr.getkey()
             if(key in ['\n', 'y', 'Y', 'yes', 'Yes']):
                 #Append the new host to the hosts.csv
+                hosts_csv.append('\n'+csv_line)
                 stdscr.addstr(len(options)+1, options[curr_option][1], "Saved!")
-                with open(datastore+'/hosts.csv', 'a') as f:
-                    f.write('\n'+csv_line)
-                
                 stdscr.getch()
                 stdscr.clear()
             else:
@@ -168,9 +247,34 @@ def new_host_screen(stdscr):
 
 
 
+def test():
+    operating_system = platform.system()#Darwin(mac), Windows, Dist(linux)
+    datastore = '/home/jonesgc/.local/share/ssm'
+    if(operating_system == 'Windows'):
+        datastore += '\\'
+    else:
+        datastore += '/'
 
+    hosts_csv = Config_File(datastore+'hosts.csv')
+    dot_env = Config_File(datastore+'.env')
+    hosts_csv.deleteLineWhere('1111111')
+    print(hosts_csv.read())
+
+
+# Define the file objects globally.
+operating_system = platform.system()#Darwin(mac), Windows, Dist(linux)
+if(operating_system == 'Windows'):
+    datastore += '\\'
+else:
+    datastore += '/'
+
+# Get file objects.
+hosts_csv = Config_File(datastore+'hosts.csv')
+dot_env = Config_File(datastore+'.env')
 
 
 if __name__ == "__main__":   
     #NOTE this file is currently not used but planned for future implementations.
-    wrapper(new_host_screen())
+    #wrapper(new_host_screen())
+    test()
+    pass

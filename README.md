@@ -1,10 +1,9 @@
 
-## Simple SSH Manager (SSM)
-
-
+## Simple SSH Manager (SSM)  
 SSM is a lightweight Python(ncurses) based SSH manager.
 
-### Installation
+
+### Installation  
 For installation, you essentially just need to clone the repository and define a few variables.
 
 1. Clone the repo into a directory of your choosing.  
@@ -37,10 +36,6 @@ For installation, you essentially just need to clone the repository and define a
 By default `SSH_USER` and `SSH_PASS` will be used on all sessions unless you specify a different variable in the `hosts.csv` username and password fields.  
 You can define unique username and password for each host if you wish, otherwise `SSH_USER` and `SSH_PASS` will be used on that host.
 
-In the `.env` file, set `PLATFORM` equal to one of the supported SSH terminals.
-For example:  `PLATFORM=putty-windows` or `PLATFORM=gnome-terminal`  
-Options:
-    putty-linux, putty-windows, gnome-terminal, xterm-terminal
 
 4. Make sure to create `hosts.csv` and add your sessions following the format found in `example-hosts.csv`.  In the .env file, `HOSTS_PATH` should equal the path to the hosts.csv file you just created.  You can add unique passwords to each session by specifying a .env variable in the `username` and `password` fields.  Just make sure that you define the variable in the .env like you did with `SSH_USER` and `SSH_PASS`.  
 Examples are provided in example hosts and the initial env file.
@@ -56,22 +51,27 @@ NOTE: Main.py contains an example of using a monitor server.  You can remove tho
 
 ### Support for ssh-keys  
 Support for SSH_KEYS can be enabled on a host by setting the ssh_key column value = to True and the path to the key equal to the password column variable.  
-#### Example hosts.csv:
+
+#### Example creating a host in hosts.csv:  
 Inside Hosts.csv:  `HostFolder,10.1.1.1,MYUSER,MYKEYFILE,True`
 Inside .env: `MYUSER=genericUser123`
 Inside .env: `MYKEYFILE=path/to/keyfile.pem`
 
 ### Defining a different port      
-
 Note: currently, all terminals support variable port assignment EXCEPT Putty.
 
 To use a different port simply define it in your hosts.csv like so: `Home,10.1.1.1:9999`  
 
+## Changing the SSH terminal  
+In the `.env` file, set `PLATFORM` equal to one of the supported SSH terminals.
+For example:  `PLATFORM=putty-windows` or `PLATFORM=gnome-terminal`  
+Options:
+    putty-linux, putty-windows, gnome-terminal, xterm-terminal
 
-
-
-    
-
-
-
+## Keybinds  
+You can see a list of keybinds if you press  `?` from the main SSM menus.  
+`d` - On a host to delete it.  
+`p` - Ping the host.  
+`l` - Open a shell to the selected host.  
+`/` - Search the hosts in the regex.  
 
