@@ -1,7 +1,16 @@
 
 ## Simple SSH Manager (SSM)  
-SSM is a lightweight Python(ncurses) based SSH manager.
+SSM is a lightweight Python ncurses based SSH manager.
 
+
+## Startup  
+To start the application simply place the binary `ssm` file in a location on the `PATH` of your system, preferrably add this folder to your `PATH` environment variable.  From that point, you can 
+simply type `ssm` in a terminal to start the application.
+
+NOTE: For Windows users, you  cannot move the binary out of the project folder and will need to add the folder to `PATH`. 
+***
+
+## Interpreting from source(Optional)
 
 ### Installation  
 For installation, you essentially just need to clone the repository and define a few variables.
@@ -48,6 +57,21 @@ Examples are provided in example hosts and the initial env file.
 
 NOTE: Main.py contains an example of using a monitor server.  You can remove those lines of code if you do not wish to use one.
 
+## Compiling from source(Optional)  
+Once you have all the dependencies installed from the above section you can then compile the code to a binary/exe file.
+
+To create a binary, you need to install `cython` and a `gcc` compiler.  
+`pip3 install cython`  
+`sudo apt install gcc`  
+Then:
+```
+cython main.py --embed
+PYTHONLIBVER=python$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')$(python3-config --abiflags)
+gcc -Os $(python3-config --includes) main.c -o ssm $(python3-config --ldflags) -l$PYTHONLIBVER
+
+```  
+
+## Configuration
 
 ### Support for ssh-keys  
 Support for SSH_KEYS can be enabled on a host by setting the ssh_key column value = to True and the path to the key equal to the password column variable.  
@@ -62,13 +86,13 @@ Note: currently, all terminals support variable port assignment EXCEPT Putty.
 
 To use a different port simply define it in your hosts.csv like so: `Home,10.1.1.1:9999`  
 
-## Changing the SSH terminal  
+### Changing the SSH terminal  
 In the `.env` file, set `PLATFORM` equal to one of the supported SSH terminals.
 For example:  `PLATFORM=putty-windows` or `PLATFORM=gnome-terminal`  
 Options:
     putty-linux, putty-windows, gnome-terminal, xterm-terminal
 
-## Keybinds  
+### Keybinds  
 You can see a list of keybinds if you press  `?` from the main SSM menus.  
 `d` - On a host to delete it.  
 `p` - Ping the host.  

@@ -70,16 +70,6 @@ class Config_File:
 
         self.write(f)
 
-
-
-
-
-
-
-
-
-
-
 def prune_env(envuser: str, envpass: str):
     # Remove all the non used env variables from .env
     # # Remove all the non used env variables from .env
@@ -215,6 +205,7 @@ def new_host_screen(stdscr):
                 stdscr.addstr(1,1,"An exception occurred: \n"+ str(e))
                 stdscr.getch()
                 break
+            stdscr.clear()
 
         elif(key == "KEY_BACKSPACE"):
             stdscr.refresh()
