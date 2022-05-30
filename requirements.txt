@@ -1,5 +1,4 @@
-python-decouple
-getpass
-appdirs
-windows-curses
-requests
+appdirs==1.4.4
+python-decouple==3.6
+requests==2.25.1
+urllib3==1.26.5
