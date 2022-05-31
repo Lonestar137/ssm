@@ -9,7 +9,7 @@ Terminal: Putty installed and callable from CLI.(Default, can be changed.)
 
 
 ## Startup  
-1. To install run: `pip install -r requirements.txt`
+1. Install the dependencies: `pip install appdirs>=1.4.4 python-decouple>=3.6 requests>=2.25.1 urllib3>=1.26.5` if on Windows include `windows-curses`.  
 2. To install run: `pip install ssmanager`
 3. Type `ssm` in a new terminal to start the app.
 

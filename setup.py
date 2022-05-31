@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
-import codecs
+from pathlib import Path
 import os
 
-here = os.path.abspath(os.path.dirname(__file__))
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
-with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
-    long_description = "\n" + fh.read()
 
-VERSION = '0.8.9'
+VERSION = '0.8.10'
 DESCRIPTION = 'A Simple SSH Manager for your terminal written in Python.'
 LONG_DESCRIPTION = 'Simple SSH Manager is a terminal utility which keeps track of server ips, passwords, and ssh keys which makes logging into your machines blazingly fast.'
 
@@ -18,6 +17,8 @@ setup(
     author="Garrett Jones",
     author_email="jonesgc137@gmail.com",
     description=DESCRIPTION,
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     python_requires='>=3.0',
     install_requires=['appdirs>=1.4.4',  'python-decouple>=3.6', 'requests>=2.25.1','urllib3>=1.26.5'],
