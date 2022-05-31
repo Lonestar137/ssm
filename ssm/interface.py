@@ -132,8 +132,9 @@ def new_host_screen(stdscr):
         rectangle(stdscr, 2,2,len(options)+3,40)
         stdscr.addstr(2,3,"Add a host:", curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
         stdscr.refresh()
-        stdscr.addstr(len(options)+3,3,"(<=) Back, (Enter) Save ", curses.color_pair(2))
-        stdscr.addstr(len(options)+4,3,"(=>) Batch create", curses.color_pair(2))
+        stdscr.addstr(len(options)+3,3,"(←) Back, (Enter) Save ", curses.color_pair(2))
+        stdscr.addstr(len(options)+4,3,"(→) Open hosts.csv", curses.color_pair(2))
+        stdscr.addstr(len(options)+5,3,"(↓) Open .env", curses.color_pair(2))
 
         if(options[4][3] == 'True'):
             # Changes password field to key_path if ssh_key=True.
@@ -200,6 +201,23 @@ def new_host_screen(stdscr):
                     os.system("start " + datastore+'\\hosts.csv')
                 else:
                     subprocess.call(('xdg-open', datastore+'/hosts.csv'))
+            except Exception as e:
+                stdscr.clear()
+                stdscr.addstr(1,1,"An exception occurred: \n"+ str(e))
+                stdscr.getch()
+                break
+            stdscr.clear()
+
+        elif(key in ["KEY_DOWN"]):
+            #Open .env in editor.
+            #TODO Add confirmation check, password warning.
+            try:
+                if(platform.system() == "Darwin"): #if mac
+                    subprocess.call(('open', datastore+'/.env'))
+                elif(platform.system() == "Windows"):
+                    os.system("start " + datastore+'\\.env')
+                else:
+                    subprocess.call(('xdg-open', datastore+'/.env'))
             except Exception as e:
                 stdscr.clear()
                 stdscr.addstr(1,1,"An exception occurred: \n"+ str(e))
