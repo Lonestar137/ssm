@@ -1,3 +1,0 @@
-[console_scripts]
-ssm = ssm.main:main
-

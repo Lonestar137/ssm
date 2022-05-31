@@ -18,5 +18,6 @@ hosts.csv
 old-nframes.py
 build*
 dist/
+ssmanager.egg-info*
 
 
