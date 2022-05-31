@@ -6,7 +6,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 
-VERSION = '0.8.10'
+VERSION = '0.8.11'
 DESCRIPTION = 'A Simple SSH Manager for your terminal written in Python.'
 LONG_DESCRIPTION = 'Simple SSH Manager is a terminal utility which keeps track of server ips, passwords, and ssh keys which makes logging into your machines blazingly fast.'
 

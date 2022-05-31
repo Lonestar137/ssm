@@ -17,6 +17,7 @@ hosts.csv
 .nframes.py.un~
 old-nframes.py
 build*
+upload.sh
 dist/
 ssmanager.egg-info*
 

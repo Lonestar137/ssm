@@ -3,9 +3,9 @@
 SSM is a lightweight Python ncurses based SSH manager.
 
 ### Requirements  
-OS: Windows, Linux, MacOS
-Python: Python version >=3
-Terminal: Putty installed and callable from CLI.(Default, can be changed.)
+OS: Windows, Linux, MacOS  
+Python: Python version >=3  
+Terminal: Putty installed and callable from CLI.(Default, can be changed.)  
 
 
 ## Startup  
