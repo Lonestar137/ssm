@@ -19,8 +19,8 @@ from collections import defaultdict
 import sys
 import getpass
 
-from UI.datastore import *
-#from datastore import *
+#from UI.datastore import *
+from ssm.datastore import *
 
 #TODO set platform
 #TODO open .env

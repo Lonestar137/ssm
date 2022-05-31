@@ -11,8 +11,8 @@ import subprocess
 
 #Necessary for environmental password configuration.
 from decouple import config
-from UI.datastore import *
-from UI.interface import delete_host, new_host_screen, hosts_csv, dot_env
+from ssm.datastore import *
+from ssm.interface import delete_host, new_host_screen, hosts_csv, dot_env
 
 #For reading and updating csv during runtime
 import csv
@@ -194,14 +194,13 @@ def queue(stdscr, my_list=None):
                             except:
                                 stdscr.addstr(1,1,'putty command not found.')
                         elif PLATFORM == 'putty-windows':
-                            cwd = os.getcwd()
                             try:
                                 if(has_key):
-                                    os.system('START /B '+cwd+'\\UI\\putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
+                                    os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -i '+UNIQUE_PASS+' '+server)
                                 else:
-                                    os.system('START /B '+cwd+'\\UI\\putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
+                                    os.system('START /B putty.exe -ssh -l '+UNIQUE_USER+' -pw '+UNIQUE_PASS+' '+server)
                             except:
-                                stdscr.addstr(1,1,'putty.exe not found in ssm folder. Please add it.')
+                                stdscr.addstr(1,1,"putty.exe not found.  Make sure it's installed and on PATH.")
                         elif PLATFORM == 'xterm-terminal':
                             try:
                                 if(has_key):

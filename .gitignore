@@ -16,6 +16,7 @@ hosts.csv
 .hosts.csv.un~
 .nframes.py.un~
 old-nframes.py
-
+build*
+dist/
 
 
