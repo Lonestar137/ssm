@@ -125,7 +125,9 @@ def create_env_variable(possible_env_var_name: str, username: str, password: str
 def new_host_screen(stdscr):
 
     #               (y, x, field, answer)
-    options: list = [(3, 3, "location: ", ""), (4, 3, "ip: ", ""), (5, 3, "username: ", ""), (6, 3, "password: ", ""), (7, 3, "ssh_key(T/F): ", "")]
+    #TODO Create a list class for creating a menu screen like this and replace list tuple items with objects.
+    options: list = [(3, 3, "location: ", ""), (4, 3, "ip: ", ""), (5, 3, "username: ", ""), (6, 3, "password: ", ""), (7, 3, "ssh_key(T/F): ", ""), (8, 3, "Open hosts.csv", " [ → ]"), (9, 3, "Open .env", " [ → ]")]
+    #options: list = [(3, 3, "location: ", ""), (4, 3, "ip: ", ""), (5, 3, "username: ", ""), (6, 3, "password: ", ""), (7, 3, "ssh_key(T/F): ", "")]
     curr_option = 0
     while True:
         max_y, max_x=window.getmaxyx(stdscr)
@@ -133,8 +135,6 @@ def new_host_screen(stdscr):
         stdscr.addstr(2,3,"Add a host:", curses.A_UNDERLINE | curses.A_BOLD | curses.color_pair(1))
         stdscr.refresh()
         stdscr.addstr(len(options)+3,3,"(←) Back, (Enter) Save ", curses.color_pair(2))
-        stdscr.addstr(len(options)+4,3,"(→) Open hosts.csv", curses.color_pair(2))
-        stdscr.addstr(len(options)+5,3,"(↓) Open .env", curses.color_pair(2))
 
         if(options[4][3] == 'True'):
             # Changes password field to key_path if ssh_key=True.
@@ -193,31 +193,17 @@ def new_host_screen(stdscr):
         elif(key in ["KEY_LEFT"]):
             break
         elif(key in ["KEY_RIGHT"]):
-            #Open hosts.csv in editor.
+            config_file = ''
+            if(curr_option == 5): config_file = 'hosts.csv'
+            elif(curr_option == 6): config_file = '.env'
+            #Open file in editor.
             try:
                 if(platform.system() == "Darwin"): #if mac
-                    subprocess.call(('open', datastore+'/hosts.csv'))
+                    subprocess.call(('open', datastore+'/'+config_file))
                 elif(platform.system() == "Windows"):
-                    os.system("start " + datastore+'\\hosts.csv')
+                    os.system("start " + datastore+'\\'+config_file)
                 else:
-                    subprocess.call(('xdg-open', datastore+'/hosts.csv'))
-            except Exception as e:
-                stdscr.clear()
-                stdscr.addstr(1,1,"An exception occurred: \n"+ str(e))
-                stdscr.getch()
-                break
-            stdscr.clear()
-
-        elif(key in ["KEY_DOWN"]):
-            #Open .env in editor.
-            #TODO Add confirmation check, password warning.
-            try:
-                if(platform.system() == "Darwin"): #if mac
-                    subprocess.call(('open', datastore+'/.env'))
-                elif(platform.system() == "Windows"):
-                    os.system("start " + datastore+'\\.env')
-                else:
-                    subprocess.call(('xdg-open', datastore+'/.env'))
+                    subprocess.call(('xdg-open', datastore+'/'+config_file))
             except Exception as e:
                 stdscr.clear()
                 stdscr.addstr(1,1,"An exception occurred: \n"+ str(e))
