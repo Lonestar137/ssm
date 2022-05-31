@@ -2,12 +2,16 @@
 ## Simple SSH Manager (SSM)  
 SSM is a lightweight Python ncurses based SSH manager.
 
+### Requirements  
+OS: Windows, Linux, MacOS
+Python: Python version >=3
+Terminal: Putty installed and callable from CLI.(Default, can be changed.)
+
 
 ## Startup  
-To start the application simply place the binary `ssm` file in a location on the `PATH` of your system, preferrably add this folder to your `PATH` environment variable.  From that point, you can 
-simply type `ssm` in a terminal to start the application.
-
-NOTE: For Windows users, you  cannot move the binary out of the project folder and will need to add the folder to `PATH`. 
+1. To install run: `pip install -r requirements.txt`
+2. To install run: `pip install ssmanager`
+3. Type `ssm` in a new terminal to start the app.
 
 ## Interpreting from source(Optional)
 
@@ -19,7 +23,12 @@ For installation, you essentially just need to clone the repository and define a
 
 2. Download the python dependencies: curses(ncurses), python-decouple.   
    **Windows** 
-   `pip3 install windows-curses python-decouple`  
+   Example:
+   `pip3 install -r requirements.txt`  
+   or just
+   `pip install` for Windows/Other distros.
+   NOTE: For Windows, you will need to run `pip install windows-curses` instead.
+
    Install a supported SSH terminal handler for your OS:
 
    **Ubuntu(Linux)**  
@@ -27,58 +36,32 @@ For installation, you essentially just need to clone the repository and define a
    `sudo apt install putty` or `xterm`
    gnome-terminal should be installed by default on standard Ubuntu/GNOME based distros.
 
-   Defining which terminal to use will be covered in the next step.
+   Defining which terminal to use is covered lower in the file, there are a variety to select from.
 
    **Windows**  
-   Download the [putty](https://www.putty.org/) .exe file and place it in the /ssm folder(The same folder as `nframes.py`).  
-
-
-3. Then, rename the `env` file to `.env`. Edit the file and define your credentials inside like so:  
-    SSH_USER=yourUSER
-    SSH_PASS=yourPASS
-    HOST_FILE=path/to/your/file/with/hosts.json  
-
-   Note: Environment variables can be defined anywhere your system supports but it's easier to manage from .env file.  You will also have to define how to retrieve the variable in `main.py`
-
+   Download [putty](https://www.putty.org/).  Make sure that putty is callable from the command line, meaning the putty.exe is on the system PATH.
 
 By default `SSH_USER` and `SSH_PASS` will be used on all sessions unless you specify a different variable in the `hosts.csv` username and password fields.  
 You can define unique username and password for each host if you wish, otherwise `SSH_USER` and `SSH_PASS` will be used on that host.
 
-
-4. Make sure to create `hosts.csv` and add your sessions following the format found in `example-hosts.csv`.  In the .env file, `HOSTS_PATH` should equal the path to the hosts.csv file you just created.  You can add unique passwords to each session by specifying a .env variable in the `username` and `password` fields.  Just make sure that you define the variable in the .env like you did with `SSH_USER` and `SSH_PASS`.  
-Examples are provided in example hosts and the initial env file.
-
-5. Afterward, you can start the application from that directory by typing in a terminal:
-   `python3 nframes.py` or `python3 /path/to/file/nframes.py` if you're in another dir.
-
-6. You can create a shell script/alias if you're on a Unix-like system to easily call the program from anywhere on the system, or if you're on Windows, you can create a batch file or shortcut.
+3. Afterward, you can start the application from that directory by typing in a terminal:
+   `python3 ssm/main.py`
 
 
-NOTE: Main.py contains an example of using a monitor server.  You can remove those lines of code if you do not wish to use one.
-
-## Compiling from source(Optional)  
-Once you have all the dependencies installed from the above section you can then compile the code to a binary/exe file.
-
-To create a binary, you need to install `cython` and a `gcc` compiler.  
-`pip3 install cython`  
-`sudo apt install gcc`  
-Then:
-```
-cython main.py --embed
-PYTHONLIBVER=python$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')$(python3-config --abiflags)
-gcc -Os $(python3-config --includes) main.c -o ssm $(python3-config --ldflags) -l$PYTHONLIBVER
-
-```  
-
-## Configuration
+## Configuration  
+Location of configuration files can be found by typing `?` in the application.  
+There are two files to take into account.  The `.env` file which contains session passwords and configuration options and the `hosts.csv`.  
+The `hosts.csv` file is your database of session information.  You can manually edit either file if preferred, or use the built in functionality to automatically edit the files.
 
 ### Support for ssh-keys  
-Support for SSH_KEYS can be enabled on a host by setting the ssh_key column value = to True and the path to the key equal to the password column variable.  
+Support for SSH_KEYS can be enabled on a host by setting the ssh_key column value = to `True` and the path to the key equal to the password column variable.  
 
-#### Example creating a host in hosts.csv:  
+#### Example manually creating a host:   
 Inside Hosts.csv:  `HostFolder,10.1.1.1,MYUSER,MYKEYFILE,True`
 Inside .env: `MYUSER=genericUser123`
 Inside .env: `MYKEYFILE=path/to/keyfile.pem`
+
+The advantage is that hosts.csv can easily be distributed to other systems, user/password columns merely reference a variable in .env so there is no risk of accidentally exposing sensitive information as long as the .env file is not also shared.
 
 ### Defining a different port      
 Note: currently, all terminals support variable port assignment EXCEPT Putty.
@@ -86,6 +69,7 @@ Note: currently, all terminals support variable port assignment EXCEPT Putty.
 To use a different port simply define it in your hosts.csv like so: `Home,10.1.1.1:9999`  
 
 ### Changing the SSH terminal  
+By default, putty is used for Windows and Unix-like systemds.  
 In the `.env` file, set `PLATFORM` equal to one of the supported SSH terminals.
 For example:  `PLATFORM=putty-windows` or `PLATFORM=gnome-terminal`  
 Options:
@@ -93,8 +77,17 @@ Options:
 
 ### Keybinds  
 You can see a list of keybinds if you press  `?` from the main SSM menus.  
-`d` - On a host to delete it.  
+`j, k` - down, up 
+`J, K` - down+5, up+5 
+`d` - On a host to delete it. Note that deleting a host does not delete the password variable stored in `.env`.  
 `p` - Ping the host.  
 `l` - Open a shell to the selected host.  
-`/` - Search the hosts in the regex.  
+`/` - Search the hosts using regex.  
+
+### Troubleshooting  
+1. `_curses` not found.  
+This is a Windows issue where the Python `curses` module uses a different package name.  You simply need to run `pip install windows-curses`
+
+2. `putty.exe` not found.  
+You need to make sure that `putty` was installed correctly.  The `putty.exe` needs to be stored in a location on your systems PATH. To see currently avail folders type: `echo $PATH`.  Putty should be stored in one of those folders or added to the PATH.
 
