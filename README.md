@@ -2,6 +2,9 @@
 ## Simple SSH Manager (SSM)  
 SSM is a lightweight Python ncurses based SSH manager.
 
+[![SSM video](https://i9.ytimg.com/vi/Z-rUCYwN_ag/mq1.jpg?sqp=CNDniZYG&rs=AOn4CLDoi9FS58eG6mVt3CSfbGMezh-IVQ)](https://youtu.be/Z-rUCYwN_ag)
+
+
 ### Requirements  
 OS: Windows, Linux, MacOS  
 Python: Python version >=3  
